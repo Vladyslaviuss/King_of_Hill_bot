@@ -9,9 +9,9 @@ class UserSchema(BaseModel):
 
 
 
-async def create_user(user: UserSchema):
-    user = await Statistic.create(**user.dict())
-    return user
+async def create_user(new_db_string: UserSchema):
+    new_db_string = await Statistic.create(**new_db_string.dict())
+    return new_db_string
 
 
 
