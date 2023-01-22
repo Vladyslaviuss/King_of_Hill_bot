@@ -1,0 +1,8 @@
+telegram==0.0.1
+aiogram==2.24
+pyTelegramBotAPI==4.9.0
+sqlalchemy==1.4.46
+asyncpg==0.27.0
+greenlet==2.0.1
+asyncio==3.4.3
+sqlalchemy_utils==0.39.0
