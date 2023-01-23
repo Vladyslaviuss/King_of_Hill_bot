@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from models import Statistic
 
-class UserSchema(BaseModel):
+class StringSchema(BaseModel):
     analysis: int
     signals: int
     screenshot: int
@@ -9,27 +9,27 @@ class UserSchema(BaseModel):
 
 
 
-async def create_user(new_db_string: UserSchema):
+async def create_user(new_db_string: StringSchema):
     new_db_string = await Statistic.create(**new_db_string.dict())
     return new_db_string
 
 
 
 async def get_user(id: str):
-    user = await Statistic.get(id)
-    return user
+    new_db_string = await Statistic.get(id)
+    return new_db_string
 
 
 
 async def get_all_users():
-    users = await Statistic.get_all()
-    return users
+    new_db_strings = await Statistic.get_all()
+    return new_db_strings
 
 
 
-async def update(id: str, user: UserSchema):
-    user = await Statistic.update(id, **user.dict())
-    return user
+async def update(id: str, new_db_string: StringSchema):
+    new_db_string = await Statistic.update(id, **new_db_string.dict())
+    return new_db_string
 
 
 
