@@ -3,10 +3,11 @@ import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message, ContentType, ChatMemberStatus
 from database import Base, db
+from models import Statistic
 # from pydantic import BaseModel
 # from models import Statistic
 # from database import Base
-from views import get_string, update, StringSchema
+from views import get_string, StringSchema
 
 TELEGRAM_BOT_TOKEN = '5602947939:AAFMRW-ElOh7FgQFHvmssoSCMtPhu3nm-18'
 
@@ -19,6 +20,25 @@ dp = Dispatcher(bot)
 
 db.init()
 
+async def update(id: str, existed_db_string: StringSchema):
+    same_db_string = await Statistic.update(id, **existed_db_string.dict())
+    return same_db_string
+
+async def update_and_increase_analysis(id: str):
+    # Retrieve the existing entry from the database
+    same_db_string = await Statistic.get(id)
+
+    # Increase the analysis field by 1
+    same_db_string.analysis += 1
+
+    # Convert the updated object to a dictionary
+    updated_values = same_db_string.__dict__
+
+    # Call the update function to save the updated values to the database
+    await update(id,existed_db_string=StringSchema(**updated_values))
+    return await get_string(id)
+
+
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     """
@@ -27,9 +47,8 @@ async def send_welcome(message: types.Message):
     result = await get_string('9056955f-9032-4d52-9211-68c990fa02e7')
     await message.reply(f"Hi!\nI'm Bot!\n First data in db written! {result}")
 
-    # async def update(id: str, new_db_string: StringSchema):
-    #     new_db_string = await Statistic.update(id, **new_db_string.dict())
-    #     return new_db_string
+
+
 
 @dp.message_handler(content_types=ContentType.TEXT)
 async def handle_text(message: Message):
@@ -43,7 +62,8 @@ async def handle_text(message: Message):
                 #                  'Помощь новичкам, ответы на вопросы': 0}
                 if text == '+':
                     # user_data['Разбор своих сделок'] += 1
-                    result = await update(id='9056955f-9032-4d52-9211-68c990fa02e7', existed_db_string=StringSchema(analysis=5, signals=5, screenshot=2, help=1))
+                    # result = await update(id='9056955f-9032-4d52-9211-68c990fa02e7', existed_db_string=StringSchema(analysis=3, signals=5, screenshot=2, help=1))
+                    result = await update_and_increase_analysis(id='9056955f-9032-4d52-9211-68c990fa02e7')
                     message_text = f'Нажал на + и получил: {result}.'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
                 # elif text == '-':
