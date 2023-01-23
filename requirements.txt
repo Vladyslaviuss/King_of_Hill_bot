@@ -8,3 +8,4 @@ asyncio==3.4.3
 sqlalchemy_utils==0.39.0
 uuid==1.30
 alembic==1.9.2
+pydantic==1.10.4
