@@ -46,6 +46,8 @@ async def handle_text(message: Message):
             if not message.reply_to_message.from_user.is_bot:
                 if await check_if_exists(id=message.chat.id) is None:
                     await create_new_string(id=message.chat.id, new_db_string=StringSchema(analysis=0, signals=0, screenshot=0, help=0))
+                    message_text = f'Записи не найдены. Параметры для Вашеuj чата: {message.chat.full_name} сгенерированы. Повторите последнее действие для его приме'
+                    await bot.send_message(chat_id=message.chat.id, text=message_text)
                 else:
                     result = await update_the_value_of_object(id=message.chat.id, text=text)
                     message_text = f'Нажал на {text} и получил: {result}.'
