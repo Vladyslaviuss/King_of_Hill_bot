@@ -1,8 +1,12 @@
+import random
+
 from sqlalchemy import Column, Integer, BigInteger
 from sqlalchemy import update as sqlalchemy_update
 from sqlalchemy.future import select
 from database import Base, db
 from uuid import uuid4
+from aiogram.types import Message
+
 
 class Statistic(Base):
     __tablename__ = "hilldb"
@@ -21,8 +25,8 @@ class Statistic(Base):
         )
 
     @classmethod
-    async def create(cls, **kwargs):
-        new_db_string = cls(**kwargs)
+    async def create(cls, id, **kwargs):
+        new_db_string = cls(id=id, **kwargs)
         db.add(new_db_string)
         try:
             await db.commit()

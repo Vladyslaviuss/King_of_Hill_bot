@@ -9,8 +9,8 @@ class StringSchema(BaseModel):
 
 
 
-async def create_new_string(new_db_string: StringSchema):
-    new_db_string = await Statistic.create(**new_db_string.dict())
+async def create_new_string(id, new_db_string: StringSchema):
+    new_db_string = await Statistic.create(id, **new_db_string.dict())
     return new_db_string
 
 

@@ -45,7 +45,7 @@ async def handle_text(message: Message):
         if message.reply_to_message:
             if not message.reply_to_message.from_user.is_bot:
                 if await check_if_exists(id=message.chat.id) is None:
-                    await create_new_string(new_db_string=StringSchema(analysis=0, signals=0, screenshot=0, help=0))
+                    await create_new_string(id=message.chat.id, new_db_string=StringSchema(analysis=0, signals=0, screenshot=0, help=0))
                 else:
                     result = await update_the_value_of_object(id=message.chat.id, text=text)
                     message_text = f'Нажал на {text} и получил: {result}.'
