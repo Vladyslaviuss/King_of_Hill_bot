@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, Integer, BigInteger
 from sqlalchemy import update as sqlalchemy_update
 from sqlalchemy.future import select
 from database import Base, db
@@ -6,7 +6,7 @@ from uuid import uuid4
 
 class Statistic(Base):
     __tablename__ = "hilldb"
-    id = Column(String, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     analysis = Column(Integer)
     signals = Column(Integer)
     screenshot = Column(Integer)
@@ -22,7 +22,7 @@ class Statistic(Base):
 
     @classmethod
     async def create(cls, **kwargs):
-        new_db_string = cls(id=str(uuid4()), **kwargs)
+        new_db_string = cls(**kwargs)
         db.add(new_db_string)
         try:
             await db.commit()

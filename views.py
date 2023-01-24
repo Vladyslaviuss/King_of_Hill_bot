@@ -15,7 +15,7 @@ async def create_new_string(new_db_string: StringSchema):
 
 
 
-async def get_string(id: str):
+async def get_string(id: int):
     new_db_string = await Statistic.get(id)
     return new_db_string
 
@@ -27,18 +27,18 @@ async def get_all_strings():
 
 
 
-async def update(id: str, existed_db_string: StringSchema):
+async def update(id: int, existed_db_string: StringSchema):
     same_db_string = await Statistic.update(id, **existed_db_string.dict())
     return same_db_string
 
 
 
-async def delete_string(id: str):
+async def delete_string(id: int):
     return await Statistic.delete(id)
 
 
 
-async def update_the_value_of_object(id: str, text:str):
+async def update_the_value_of_object(id: int, text:str):
     # Retrieve the existing entry from the database
     same_db_string = await Statistic.get(id)
     if text == '+':
@@ -78,7 +78,7 @@ async def update_the_value_of_object(id: str, text:str):
 #         print(f"Error connecting to the database: {e}")
 #         return False
 
-async def check_if_exists(id: str):
+async def check_if_exists(id: int):
     # Try to retrieve the record with the specific ID
     result = await Statistic.get(id)
     # Check if the result is None
