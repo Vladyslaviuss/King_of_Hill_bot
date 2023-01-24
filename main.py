@@ -7,7 +7,7 @@ from models import Statistic
 # from pydantic import BaseModel
 # from models import Statistic
 # from database import Base
-from views import get_string, StringSchema
+from views import get_string, StringSchema, update_the_value_of_object, check_if_exists, create_new_string
 
 TELEGRAM_BOT_TOKEN = '5602947939:AAFMRW-ElOh7FgQFHvmssoSCMtPhu3nm-18'
 
@@ -24,19 +24,7 @@ async def update(id: str, existed_db_string: StringSchema):
     same_db_string = await Statistic.update(id, **existed_db_string.dict())
     return same_db_string
 
-async def update_and_increase_analysis(id: str):
-    # Retrieve the existing entry from the database
-    same_db_string = await Statistic.get(id)
 
-    # Increase the analysis field by 1
-    same_db_string.analysis += 1
-
-    # Convert the updated object to a dictionary
-    updated_values = same_db_string.__dict__
-
-    # Call the update function to save the updated values to the database
-    await update(id,existed_db_string=StringSchema(**updated_values))
-    return await get_string(id)
 
 
 @dp.message_handler(commands=['start', 'help'])
@@ -49,7 +37,6 @@ async def send_welcome(message: types.Message):
 
 
 
-
 @dp.message_handler(content_types=ContentType.TEXT)
 async def handle_text(message: Message):
     text = message.text.lower()
@@ -57,43 +44,12 @@ async def handle_text(message: Message):
     if member.status == ChatMemberStatus.OWNER:
         if message.reply_to_message:
             if not message.reply_to_message.from_user.is_bot:
-                # if not user_data:
-                #     user_data = {'Разбор своих сделок': 0, 'Сигналы-детекты': 0, 'Скрины со сделками': 0,
-                #                  'Помощь новичкам, ответы на вопросы': 0}
-                if text == '+':
-                    # user_data['Разбор своих сделок'] += 1
-                    # result = await update(id='9056955f-9032-4d52-9211-68c990fa02e7', existed_db_string=StringSchema(analysis=3, signals=5, screenshot=2, help=1))
-                    result = await update_and_increase_analysis(id='9056955f-9032-4d52-9211-68c990fa02e7')
-                    message_text = f'Нажал на + и получил: {result}.'
+                if check_if_exists(id='9056955f-9032-4d52-9211-68c990fa02e7') is False:
+                    await create_new_string(new_db_string=StringSchema(analysis=0, signals=0, screenshot=0, help=0))
+                else:
+                    result = await update_the_value_of_object(id='9056955f-9032-4d52-9211-68c990fa02e7', text=text)
+                    message_text = f'Нажал на {text} и получил: {result}.'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
-                # elif text == '-':
-                #     user_data['Разбор своих сделок'] -= 1
-                #     message_text = f'Параметр "Разбор своих сделок" уменьшен на 1. Текущее значение: {user_data["Разбор своих сделок"]}.'
-                #     await bot.send_message(chat_id=message.chat.id, text=message_text)
-                # elif text == '++':
-                #     user_data['Сигналы-детекты'] += 1
-                #     message_text = f'Параметр "Сигналы-детекты" увеличен на 1. Текущее значение: {user_data["Сигналы-детекты"]}.'
-                #     await bot.send_message(chat_id=message.chat.id, text=message_text)
-                # elif text == '--':
-                #     user_data['Сигналы-детекты'] -= 1
-                #     message_text = f'Параметр "Сигналы-детекты" уменьшен на 1. Текущее значение: {user_data["Сигналы-детекты"]}.'
-                #     await bot.send_message(chat_id=message.chat.id, text=message_text)
-                # elif text == '+++':
-                #     user_data['Скрины со сделками'] += 1
-                #     message_text = f'Параметр "Скрины со сделками" увеличен на 1. Текущее значение: {user_data["Скрины со сделками"]}.'
-                #     await bot.send_message(chat_id=message.chat.id, text=message_text)
-                # elif text == '---':
-                #     user_data['Скрины со сделками'] -= 1
-                #     message_text = f'Параметр "Скрины со сделками" уменьшен на 1. Текущее значение: {user_data["Скрины со сделками"]}.'
-                #     await bot.send_message(chat_id=message.chat.id, text=message_text)
-                # elif text == '++++':
-                #     user_data['Помощь новичкам, ответы на вопросы'] += 1
-                #     message_text = f'Параметр "Помощь новичкам, ответы на вопросы" увеличен на 1. Текущее значение: {user_data["Помощь новичкам, ответы на вопросы"]}.'
-                #     await bot.send_message(chat_id=message.chat.id, text=message_text)
-                # elif text == '----':
-                #     user_data['Помощь новичкам, ответы на вопросы'] -= 1
-                #     message_text = f'Параметр "Помощь новичкам, ответы на вопросы" уменьшен на 1. Текущее значение: {user_data["Помощь новичкам, ответы на вопросы"]}.'
-                #     await bot.send_message(chat_id=message.chat.id, text=message_text)
             else:
                 message_text = "Can't add or subtract parameters to a bot."
                 await bot.send_message(chat_id=message.chat.id, text=message_text)
