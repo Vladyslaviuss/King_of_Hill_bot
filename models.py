@@ -49,9 +49,17 @@ class Statistic(Base):
     @classmethod
     async def get(cls, id):
         query = select(cls).where(cls.id == id)
-        new_db_strins = await db.execute(query)
-        (new_db_string,) = new_db_strins.first()
-        return new_db_string
+        new_db_strings = await db.execute(query)
+        try:
+            (new_db_string,) = new_db_strings.first()
+            return new_db_string
+        except TypeError as e:
+            return None
+        # if new_db_string is None:
+        #     return None
+        # else:
+        #     unpacked = (new_db_string,)
+        #     return unpacked
 
     @classmethod
     async def get_all(cls):

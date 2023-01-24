@@ -32,7 +32,7 @@ async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
     """
-    result = await get_string('9056955f-9032-4d52-9211-68c990fa02e7')
+    result = await get_string('26fd2706-8baf-433b-82eb-8c7fada847da')
     await message.reply(f"Hi!\nI'm Bot!\n First data in db written! {result}")
 
 
@@ -44,10 +44,10 @@ async def handle_text(message: Message):
     if member.status == ChatMemberStatus.OWNER:
         if message.reply_to_message:
             if not message.reply_to_message.from_user.is_bot:
-                if check_if_exists(id='9056955f-9032-4d52-9211-68c990fa02e7') is False:
+                if await check_if_exists(id='66fd2706-8baf-433b-82eb-8c7fada847da') is None:
                     await create_new_string(new_db_string=StringSchema(analysis=0, signals=0, screenshot=0, help=0))
                 else:
-                    result = await update_the_value_of_object(id='9056955f-9032-4d52-9211-68c990fa02e7', text=text)
+                    result = await update_the_value_of_object(id='66fd2706-8baf-433b-82eb-8c7fada847da', text=text)
                     message_text = f'Нажал на {text} и получил: {result}.'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
             else:

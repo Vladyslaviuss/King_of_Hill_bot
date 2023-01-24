@@ -82,8 +82,9 @@ async def check_if_exists(id: str):
     # Try to retrieve the record with the specific ID
     result = await Statistic.get(id)
     # Check if the result is None
-    if result is not None:
-        return True
-    else:
-        return False
+    # if result is not None:
+    #     return True
+    # else:
+    #     return False
+    return result
 
