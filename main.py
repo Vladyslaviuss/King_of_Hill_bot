@@ -7,7 +7,7 @@ from models import Statistic
 # from pydantic import BaseModel
 # from models import Statistic
 # from database import Base
-from views import get_string, StringSchema, update_the_value_of_object, check_if_exists, create_new_string
+from views import get_string, StringSchema, update_the_value_of_object, check_if_exists, create_new_string, set_the_value_for_exact_parameter
 
 TELEGRAM_BOT_TOKEN = '5602947939:AAFMRW-ElOh7FgQFHvmssoSCMtPhu3nm-18'
 
@@ -48,6 +48,29 @@ async def show_results(message: types.Message):
             chat_id=message.chat.id, text=f'Currently no any results for chat "{message.chat.full_name}".'
         )
 
+@dp.message_handler(commands=['set_results'])
+async def set_results(message: types.Message):
+    """
+    This handler will be called when the group owner sends the command '/set_results <parameter> <value>'
+    """
+    # Check if the user is the group owner
+    member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+    if member.status == ChatMemberStatus.OWNER:
+        if await check_if_exists(id=message.chat.id) is not None:
+            try:
+                parameter = int(' '.join(message.text.split()[1:-1]))
+                value = int(message.text.split()[-1])
+                message_text = await set_the_value_for_exact_parameter(id=message.chat.id, param=parameter, value=value)
+                await bot.send_message(chat_id=message.chat.id, text=message_text)
+            except ValueError:
+                await bot.send_message(chat_id=message.chat.id, text="Missing desired value and/or parameter. Please provide a parameter and value after the command.\n Example: /set_results Разбор своих сделок 5")
+        else:
+            message_text = 'No entry in DB. Create entry first.'
+            await bot.send_message(chat_id=message.chat.id, text=message_text)
+    else:
+        message_text = "You have no permission"
+        await bot.send_message(chat_id=message.chat.id, text=message_text)
+
 @dp.message_handler(content_types=ContentType.TEXT)
 async def handle_text(message: Message):
     text = message.text.lower()
@@ -74,9 +97,6 @@ async def startup():
     await db.create_all()
 
     await dp.start_polling(bot)
-
-
-
 
 
 if __name__ == '__main__':

@@ -96,3 +96,30 @@ async def check_if_exists(id: int):
     #     return False
     return result
 
+
+async def set_the_value_for_exact_parameter(id: int, param: int, value: int):
+    # Retrieve the existing entry from the database
+    same_db_string = await Statistic.get(id)
+    if param <= 4:
+        if param == 1:
+        # Increase the analysis field by 1
+            same_db_string.analysis = value
+            message_text = f"Параметр 'Разбор своих сделок' увеличен до значения: {value}."
+        elif param == 2:
+            same_db_string.signals = value
+            message_text = f"Параметр 'Сигналы-детекты' увеличен до значения: {value}."
+        elif param == 3:
+            same_db_string.screenshot = value
+            message_text = f"Параметр 'Скрины со сделками' увеличен до значения: {value}."
+        elif param == 4:
+            same_db_string.help = value
+            message_text = f"Параметр 'Помощь новичкам, ответы на вопросы' увеличен до значения: {value}."
+    else:
+        message_text = f'Первая цифра должна быть не больше 4, соответствуя номеру каждого существующего параметра.'
+    # Convert the updated object to a dictionary
+    updated_values = same_db_string.__dict__
+
+    # Call the update function to save the updated values to the database
+    await update(id,existed_db_string=StringSchema(**updated_values))
+    return message_text
+
