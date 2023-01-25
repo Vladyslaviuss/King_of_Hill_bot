@@ -7,7 +7,9 @@ from models import Statistic
 # from pydantic import BaseModel
 # from models import Statistic
 # from database import Base
-from views import get_string, StringSchema, TargetSchema, update_the_value_of_object, check_if_exists, create_new_string, set_the_value_for_exact_parameter, set_the_target_for_exact_parameter
+from views import get_string, StringSchema, TargetSchema, update_the_value_of_object, check_if_exists, \
+    create_new_string, set_the_value_for_exact_parameter, set_the_target_for_exact_parameter, existance_of_user, \
+    create_new_userdata, IndividualSchema, update_user_parameter
 
 TELEGRAM_BOT_TOKEN = '5602947939:AAFMRW-ElOh7FgQFHvmssoSCMtPhu3nm-18'
 
@@ -112,9 +114,14 @@ async def handle_text(message: Message):
                     message_text = f'Записи не найдены. Параметры для Вашего чата: "{message.chat.full_name}" сгенерированы. Повторите последнее действие для его применения.'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
                 else:
+                    if await existance_of_user(id=message.from_user.id) is None:
+                        await create_new_userdata(id=message.from_user.id, new_db_string=IndividualSchema(username=message.from_user.username, analysis=0, signals=0, screenshot=0, help=0))
                     result = await update_the_value_of_object(id=message.chat.id, text=text)
+                    message_for_user = await update_user_parameter(id=message.from_user.id, text=text)
                     message_text = f'{result}'
+                    message_text2 = f'{message_for_user}'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
+                    await bot.send_message(chat_id=message.chat.id, text=message_text2)
             else:
                 message_text = "Can't add or subtract parameters to a bot."
                 await bot.send_message(chat_id=message.chat.id, text=message_text)

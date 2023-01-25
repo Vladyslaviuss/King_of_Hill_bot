@@ -16,10 +16,10 @@ class TargetSchema(BaseModel):
 
 class IndividualSchema(BaseModel):
     username: int
-    analysis_target: int
-    signals_target: int
-    screenshot_target: int
-    help_target: int
+    analysis: int
+    signals: int
+    screenshot: int
+    help: int
 
 
 async def create_new_string(id, new_db_string: StringSchema):
@@ -167,3 +167,44 @@ async def set_the_target_for_exact_parameter(id: int, param: int, target: int):
 async def create_new_userdata(id, new_db_string: IndividualSchema):
     new_db_string = await Individual.create(id, **new_db_string.dict())
     return new_db_string
+
+async def existance_of_user(id: int):
+    # Try to retrieve the record with the specific ID
+    result = await Individual.get(id)
+    return result
+
+async def update_user_parameter(id: int, text:str):
+    # Retrieve the existing entry from the database
+    same_db_string = await Individual.get(id)
+    if text == '+':
+    # Increase the analysis field by 1
+        same_db_string.analysis += 1
+        message_text = f"Параметр 'Разбор своих сделок' увеличен на 1 for {id}."
+    elif text == '-':
+        same_db_string.analysis -= 1
+        message_text = f"Параметр 'Разбор своих сделок' уменьшен на 1. for {id}."
+    elif text == '++':
+        same_db_string.signals += 1
+        message_text = f"Параметр 'Сигналы-детекты' увеличен на 1. for {id}."
+    elif text == '--':
+        same_db_string.signals -= 1
+        message_text = f"Параметр 'Сигналы-детекты' уменьшен на 1. for {id}."
+    elif text == '+++':
+        same_db_string.screenshot += 1
+        message_text = f"Параметр 'Скрины со сделками' увеличен на 1. for {id}."
+    elif text == '---':
+        message_text = f"Параметр 'Скрины со сделками' уменьшен на 1. for {id}."
+        same_db_string.screenshot -= 1
+    elif text == '++++':
+        same_db_string.help += 1
+        message_text = f"Параметр 'Помощь новичкам, ответы на вопросы' увеличен на 1. for {id}."
+    elif text == '----':
+        same_db_string.help -= 1
+        message_text = f"Параметр 'Помощь новичкам, ответы на вопросы' уменьшен на 1. for {id}."
+
+    # Convert the updated object to a dictionary
+    updated_values = same_db_string.__dict__
+
+    # Call the update function to save the updated values to the database
+    await update(id,existed_db_string=IndividualSchema(**updated_values))
+    return message_text
