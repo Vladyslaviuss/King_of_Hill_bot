@@ -44,27 +44,35 @@ async def update_the_value_of_object(id: int, text:str):
     if text == '+':
     # Increase the analysis field by 1
         same_db_string.analysis += 1
+        message_text = "Параметр 'Разбор своих сделок' увеличен на 1."
     elif text == '-':
         same_db_string.analysis -= 1
+        message_text = "Параметр 'Разбор своих сделок' уменьшен на 1."
     elif text == '++':
         same_db_string.signals += 1
+        message_text = "Параметр 'Сигналы-детекты' увеличен на 1."
     elif text == '--':
         same_db_string.signals -= 1
+        message_text = "Параметр 'Сигналы-детекты' уменьшен на 1."
     elif text == '+++':
         same_db_string.screenshot += 1
+        message_text = "Параметр 'Скрины со сделками' увеличен на 1."
     elif text == '---':
+        message_text = "Параметр 'Скрины со сделками' уменьшен на 1."
         same_db_string.screenshot -= 1
     elif text == '++++':
         same_db_string.help += 1
+        message_text = "Параметр 'Помощь новичкам, ответы на вопросы' увеличен на 1."
     elif text == '----':
         same_db_string.help -= 1
+        message_text = "Параметр 'Помощь новичкам, ответы на вопросы' уменьшен на 1."
 
     # Convert the updated object to a dictionary
     updated_values = same_db_string.__dict__
 
     # Call the update function to save the updated values to the database
     await update(id,existed_db_string=StringSchema(**updated_values))
-    return await get_string(id)
+    return message_text
 
 # async def check_if_exists(id: str):
 #     try:
