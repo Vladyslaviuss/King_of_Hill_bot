@@ -10,7 +10,11 @@ class StringSchema(BaseModel):
     # signals_target: int
     # screenshot_target: int
     # help_target: int
-
+class TargetSchema(BaseModel):
+    analysis_target: int
+    signals_target: int
+    screenshot_target: int
+    help_target: int
 
 
 async def create_new_string(id, new_db_string: StringSchema):
@@ -31,8 +35,12 @@ async def get_all_strings():
 
 
 
-async def update(id: int, existed_db_string: StringSchema):
+async def update(id: int, existed_db_string: StringSchema | TargetSchema):
     same_db_string = await Statistic.update(id, **existed_db_string.dict())
+    return same_db_string
+
+async def update_target(id: int, existed_db_string: dict):
+    same_db_string = await Statistic.update(id, **existed_db_string)
     return same_db_string
 
 
@@ -125,5 +133,32 @@ async def set_the_value_for_exact_parameter(id: int, param: int, value: int):
 
     # Call the update function to save the updated values to the database
     await update(id,existed_db_string=StringSchema(**updated_values))
+    return message_text
+
+
+async def set_the_target_for_exact_parameter(id: int, param: int, target: int):
+    # Retrieve the existing entry from the database
+    same_db_string = await Statistic.get(id)
+    if param <= 4:
+        if param == 1:
+        # Increase the analysis field by 1
+            same_db_string.analysis_target = target
+            message_text = f"Новая цель для параметра 'Разбор своих сделок' установлена: {target}."
+        elif param == 2:
+            same_db_string.signals_target = target
+            message_text = f"Новая цель для параметра 'Сигналы-детекты' установлена: {target}."
+        elif param == 3:
+            same_db_string.screenshot_target = target
+            message_text = f"Новая цель для параметра 'Скрины со сделками' установлена: {target}."
+        elif param == 4:
+            same_db_string.help_target = target
+            message_text = f"Новая цель для параметра 'Помощь новичкам, ответы на вопросы' установлена: {target}."
+    else:
+        message_text = f'Первая цифра должна быть не больше 4, соответствуя номеру каждого существующего параметра.'
+    # Convert the updated object to a dictionary
+    updated_values = same_db_string.__dict__
+
+    # Call the update function to save the updated values to the database
+    await update(id,existed_db_string=TargetSchema(**updated_values))
     return message_text
 
