@@ -28,12 +28,32 @@ class Statistic(Base):
     #     )
 
     def __str__(self):
-        return (
-            f"({self.analysis} / {self.analysis_target} шт) Разбор своих сделок\n"
-            f"({self.signals} / {self.signals_target} шт) Сигналы-детекты\n"
-            f"({self.screenshot} / {self.screenshot_target} шт) Скрины со сделками\n"
-            f"({self.help} / {self.help_target} шт) Помощь новичкам, ответы на вопросы\n"
-        )
+        full_message = ''
+        if self.analysis <= self.analysis_target:
+            message = f"1. ({self.analysis} / {self.analysis_target} шт) Разбор своих сделок\n"
+            full_message += message
+        else:
+            message = f"1. ({self.analysis} / {self.analysis_target} шт) ✅ Разбор своих сделок\n"
+            full_message += message
+        if self.signals <= self.signals_target:
+            message = f"2. ({self.signals} / {self.signals_target} шт) Сигналы-детекты\n"
+            full_message += message
+        else:
+            message = f"2. ({self.signals} / {self.signals_target} шт) ✅ Сигналы-детекты\n"
+            full_message += message
+        if self.screenshot <= self.screenshot_target:
+            message = f"3. ({self.screenshot} / {self.screenshot_target} шт) Скрины со сделками\n"
+            full_message += message
+        else:
+            message = f"3. ({self.screenshot} / {self.screenshot_target} шт) ✅ Скрины со сделками\n"
+            full_message += message
+        if self.help <= self.help_target:
+            message = f"4. ({self.help} / {self.help_target} шт) Помощь новичкам, ответы на вопросы\n"
+            full_message += message
+        else:
+            message = f"4. ({self.help} / {self.help_target} шт) ✅ Помощь новичкам, ответы на вопросы\n"
+            full_message += message
+        return full_message
 
     @classmethod
     async def create(cls, id, **kwargs):
