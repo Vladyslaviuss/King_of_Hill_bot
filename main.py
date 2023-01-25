@@ -32,10 +32,24 @@ async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
     """
-    result = await get_string('26fd2706-8baf-433b-82eb-8c7fada847da')
+    result = await get_string(id=message.chat.id)
     await message.reply(f"Hi!\nI'm Bot!\n First data in db written! {result}")
 
 
+@dp.message_handler(commands=['results'])
+async def show_results(message: types.Message):
+    """
+    This handler will be called when user sends the command '/results' as reply for message
+    """
+    if await check_if_exists(id=message.chat.id) is not None:
+        results = await get_string(id=message.chat.id)
+        message_text = f'\nОбщие результаты:\n'
+        message_text += f'\n{results}\n'
+        await message.reply(f"{message_text}")
+    else:
+        await bot.send_message(
+            chat_id=message.chat.id, text=f'Currently no any results for chat {message.chat.full_name}.'
+        )
 
 @dp.message_handler(content_types=ContentType.TEXT)
 async def handle_text(message: Message):
@@ -46,11 +60,11 @@ async def handle_text(message: Message):
             if not message.reply_to_message.from_user.is_bot:
                 if await check_if_exists(id=message.chat.id) is None:
                     await create_new_string(id=message.chat.id, new_db_string=StringSchema(analysis=0, signals=0, screenshot=0, help=0))
-                    message_text = f'Записи не найдены. Параметры для Вашеuj чата: {message.chat.full_name} сгенерированы. Повторите последнее действие для его приме'
+                    message_text = f'Записи не найдены. Параметры для Вашего чата: {message.chat.full_name} сгенерированы. Повторите последнее действие для его приме'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
                 else:
                     result = await update_the_value_of_object(id=message.chat.id, text=text)
-                    message_text = f'Нажал на {text} и получил: {result}.'
+                    message_text = f'{result}'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
             else:
                 message_text = "Can't add or subtract parameters to a bot."

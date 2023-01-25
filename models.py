@@ -4,8 +4,7 @@ from sqlalchemy import Column, Integer, BigInteger
 from sqlalchemy import update as sqlalchemy_update
 from sqlalchemy.future import select
 from database import Base, db
-from uuid import uuid4
-from aiogram.types import Message
+
 
 
 class Statistic(Base):
@@ -16,12 +15,20 @@ class Statistic(Base):
     screenshot = Column(Integer)
     help = Column(Integer)
 
-    def __repr__(self):
+    # def __repr__(self):
+    #     return (
+    #         f"<{self.__class__.__name__}("
+    #         f"id={self.id}, "
+    #         f"analysis={self.analysis}, "
+    #         f")>"
+    #     )
+
+    def __str__(self):
         return (
-            f"<{self.__class__.__name__}("
-            f"id={self.id}, "
-            f"analysis={self.analysis}, "
-            f")>"
+            f"({self.analysis} / 20 шт) Разбор своих сделок\n"
+            f"({self.signals} / 20 шт) Сигналы-детекты\n"
+            f"({self.screenshot}/ 90 шт) Скрины со сделками\n"
+            f"({self.help} / 20 шт) Помощь новичкам, ответы на вопросы\n"
         )
 
     @classmethod
