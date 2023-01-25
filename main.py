@@ -118,9 +118,9 @@ async def handle_text(message: Message):
             else:
                 message_text = "Can't add or subtract parameters to a bot."
                 await bot.send_message(chat_id=message.chat.id, text=message_text)
-    else:
-        message_text = "You have no permission"
-        await bot.send_message(chat_id=message.chat.id, text=message_text)
+    # else:
+    #     message_text = "You have no permission"
+    #     await bot.send_message(chat_id=message.chat.id, text=message_text)
 
 async def startup():
     await db.create_all()
