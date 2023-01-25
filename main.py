@@ -21,7 +21,6 @@ dp = Dispatcher(bot)
 db.init()
 
 
-
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     """

@@ -6,6 +6,10 @@ class StringSchema(BaseModel):
     signals: int
     screenshot: int
     help: int
+    # analysis_target: int
+    # signals_target: int
+    # screenshot_target: int
+    # help_target: int
 
 
 

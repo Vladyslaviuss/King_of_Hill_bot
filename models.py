@@ -14,6 +14,10 @@ class Statistic(Base):
     signals = Column(Integer)
     screenshot = Column(Integer)
     help = Column(Integer)
+    analysis_target = Column(Integer, default=10)
+    signals_target = Column(Integer, default=20)
+    screenshot_target = Column(Integer, default=90)
+    help_target = Column(Integer, default=20)
 
     # def __repr__(self):
     #     return (
@@ -25,10 +29,10 @@ class Statistic(Base):
 
     def __str__(self):
         return (
-            f"({self.analysis} / 20 шт) Разбор своих сделок\n"
-            f"({self.signals} / 20 шт) Сигналы-детекты\n"
-            f"({self.screenshot}/ 90 шт) Скрины со сделками\n"
-            f"({self.help} / 20 шт) Помощь новичкам, ответы на вопросы\n"
+            f"({self.analysis} / {self.analysis_target} шт) Разбор своих сделок\n"
+            f"({self.signals} / {self.signals_target} шт) Сигналы-детекты\n"
+            f"({self.screenshot} / {self.screenshot_target} шт) Скрины со сделками\n"
+            f"({self.help} / {self.help_target} шт) Помощь новичкам, ответы на вопросы\n"
         )
 
     @classmethod
