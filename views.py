@@ -1,16 +1,21 @@
 from pydantic import BaseModel
-from models import Statistic
+from models import Statistic, Individual
+
 
 class StringSchema(BaseModel):
     analysis: int
     signals: int
     screenshot: int
     help: int
-    # analysis_target: int
-    # signals_target: int
-    # screenshot_target: int
-    # help_target: int
+
 class TargetSchema(BaseModel):
+    analysis_target: int
+    signals_target: int
+    screenshot_target: int
+    help_target: int
+
+class IndividualSchema(BaseModel):
+    username: int
     analysis_target: int
     signals_target: int
     screenshot_target: int
@@ -101,11 +106,6 @@ async def update_the_value_of_object(id: int, text:str):
 async def check_if_exists(id: int):
     # Try to retrieve the record with the specific ID
     result = await Statistic.get(id)
-    # Check if the result is None
-    # if result is not None:
-    #     return True
-    # else:
-    #     return False
     return result
 
 
@@ -162,3 +162,8 @@ async def set_the_target_for_exact_parameter(id: int, param: int, target: int):
     await update(id,existed_db_string=TargetSchema(**updated_values))
     return message_text
 
+
+
+async def create_new_userdata(id, new_db_string: IndividualSchema):
+    new_db_string = await Individual.create(id, **new_db_string.dict())
+    return new_db_string
