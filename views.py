@@ -1,4 +1,7 @@
 from pydantic import BaseModel
+from sqlalchemy import exists
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from models import Statistic, Individual
 
 
@@ -212,3 +215,19 @@ async def update_user_parameter(telegram_user_id: int, text:str):
     # Call the update function to save the updated values to the database
     await update2(telegram_user_id,existed_db_string=IndividualSchema(**updated_values))
     return message_text
+
+
+async def table_content(chat_id: int):
+    query = exists([Individual]).where(Individual.chat_id == chat_id)
+    result = await db.execute(query)
+    if result.scalar():
+    # there are rows with the specified chat_id
+        return True
+    else:
+# there are no rows with the specified chat_id
+        return None
+
+
+async def show_leaders(session: AsyncSession, qtty: int):
+    result = await Individual.get_top_users_by_points(session=session, qtty=qtty)
+    return result

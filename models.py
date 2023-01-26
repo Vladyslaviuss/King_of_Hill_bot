@@ -177,3 +177,8 @@ class Individual(Base):
             await db.rollback()
             raise
         return True
+    @classmethod
+    async def get_top_users_by_points(cls, session, qtty):
+        query = session.query(cls).order_by(cls.points.desc()).limit(qtty)
+        top_users = await query.all()
+        return top_users
