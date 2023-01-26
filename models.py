@@ -112,6 +112,7 @@ class Individual(Base):
     signals = Column(Integer)
     screenshot = Column(Integer)
     help = Column(Integer)
+    points = Column(Integer)
 
     def __str__(self):
         return (
