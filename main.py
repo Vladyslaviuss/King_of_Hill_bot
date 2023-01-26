@@ -9,7 +9,7 @@ from models import Statistic
 # from database import Base
 from views import get_string, StringSchema, TargetSchema, update_the_value_of_object, check_if_exists, \
     create_new_string, set_the_value_for_exact_parameter, set_the_target_for_exact_parameter, existance_of_user, \
-    create_new_userdata, IndividualSchema, update_user_parameter
+    create_new_userdata, IndividualSchema, update_user_parameter, get_user
 
 TELEGRAM_BOT_TOKEN = '5602947939:AAFMRW-ElOh7FgQFHvmssoSCMtPhu3nm-18'
 
@@ -47,6 +47,21 @@ async def show_results(message: types.Message):
     else:
         await bot.send_message(
             chat_id=message.chat.id, text=f'Currently no any results for chat "{message.chat.full_name}".'
+        )
+
+@dp.message_handler(commands=['my_results'])
+async def show_results(message: types.Message):
+    """
+    This handler will be called when user sends the command '/results' as reply for message
+    """
+    if await existance_of_user(telegram_user_id=message.from_user.id) is not None:
+        results = await get_user(telegram_user_id=message.from_user.id)
+        message_text = f'\nИндивидуальный вклад пользователя за все время: @{message.from_user.username}\n'
+        message_text += f'\n{results}\n'
+        await message.reply(f"{message_text}")
+    else:
+        await bot.send_message(
+            chat_id=message.chat.id, text=f'Отсутствуют результаты для пользователя: @{message.from_user.username}.'
         )
 
 @dp.message_handler(commands=['set_results'])

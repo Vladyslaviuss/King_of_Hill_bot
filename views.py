@@ -33,6 +33,10 @@ async def get_string(chat_id: int):
     new_db_string = await Statistic.get(chat_id)
     return new_db_string
 
+async def get_user(telegram_user_id: int):
+    new_db_string = await Individual.get(telegram_user_id)
+    return new_db_string
+
 
 
 async def get_all_strings():

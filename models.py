@@ -116,11 +116,11 @@ class Individual(Base):
 
     def __str__(self):
         return (
-            f"Индивидуальный вклад пользователя {self.username} за все время:\n"
-            f"\nСкрины со сделками: {self.screenshot}"
-            f"Сигналы-детекты: {self.signals}"
-            f"Помощь новичкам, ответы на вопросы: {self.help}"
-            f"Разбор своих сделок: {self.analysis}"
+            f"\nСкрины со сделками: {self.screenshot}\n"
+            f"Сигналы-детекты: {self.signals}\n"
+            f"Помощь новичкам, ответы на вопросы: {self.help}\n"
+            f"Разбор своих сделок: {self.analysis}\n"
+            f"\nЗаработанные очки: {self.points}"
         )
 
     @classmethod
