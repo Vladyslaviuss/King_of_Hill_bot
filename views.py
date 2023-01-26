@@ -159,8 +159,8 @@ async def set_the_target_for_exact_parameter(chat_id: int, param: int, target: i
 
 
 
-async def create_new_userdata(telegram_user_id, new_db_string: IndividualSchema):
-    new_db_string = await Individual.create(telegram_user_id, **new_db_string.dict())
+async def create_new_userdata(telegram_user_id, chat_id, new_db_string: IndividualSchema):
+    new_db_string = await Individual.create(telegram_user_id, chat_id, **new_db_string.dict())
     return new_db_string
 
 async def existance_of_user(telegram_user_id: int):

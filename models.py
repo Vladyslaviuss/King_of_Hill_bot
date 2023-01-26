@@ -123,8 +123,8 @@ class Individual(Base):
         )
 
     @classmethod
-    async def create(cls, telegram_user_id, **kwargs):
-        new_db_string = cls(telegram_user_id=telegram_user_id, **kwargs)
+    async def create(cls, telegram_user_id, chat_id, **kwargs):
+        new_db_string = cls(telegram_user_id=telegram_user_id, chat_id=chat_id, **kwargs)
         db.add(new_db_string)
         try:
             await db.commit()
