@@ -1,6 +1,6 @@
 import random
 
-from sqlalchemy import Column, Integer, BigInteger, String, ForeignKey
+from sqlalchemy import Column, Integer, BigInteger, String, ForeignKey, exists
 from sqlalchemy import update as sqlalchemy_update
 from sqlalchemy.future import select
 from database import Base, db
@@ -182,3 +182,14 @@ class Individual(Base):
         query = session.query(cls).order_by(cls.points.desc()).limit(qtty)
         top_users = await query.all()
         return top_users
+
+    @classmethod
+    async def table_content(cls, chat_id: int):
+        query = select(cls).where(cls.chat_id == chat_id)
+        result = await db.execute(query)
+        if result.scalar():
+            # there are rows with the specified chat_id
+            return True
+        else:
+            # there are no rows with the specified chat_id
+            return None

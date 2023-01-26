@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from sqlalchemy import exists
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from database import db
 from models import Statistic, Individual
 
 
@@ -217,15 +218,9 @@ async def update_user_parameter(telegram_user_id: int, text:str):
     return message_text
 
 
-async def table_content(chat_id: int):
-    query = exists([Individual]).where(Individual.chat_id == chat_id)
-    result = await db.execute(query)
-    if result.scalar():
-    # there are rows with the specified chat_id
-        return True
-    else:
-# there are no rows with the specified chat_id
-        return None
+async def check_content(chat_id: int):
+    result = await Individual.table_content(chat_id)
+    return result
 
 
 async def show_leaders(session: AsyncSession, qtty: int):
