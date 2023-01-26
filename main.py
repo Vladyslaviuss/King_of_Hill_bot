@@ -116,10 +116,10 @@ async def handle_text(message: Message):
                 else:
                     id = message.reply_to_message.from_user.id
                     username = message.reply_to_message.from_user.username
-                    if await existance_of_user(id=id) is None:
-                        await create_new_userdata(id=id, new_db_string=IndividualSchema(username=username, analysis=0, signals=0, screenshot=0, help=0))
+                    if await existance_of_user(telegram_user_id=id) is None:
+                        await create_new_userdata(telegram_user_id=id, new_db_string=IndividualSchema(username=username, analysis=0, signals=0, screenshot=0, help=0))
                     result = await update_the_value_of_object(chat_id=message.chat.id, text=text)
-                    message_for_user = await update_user_parameter(id=id, text=text)
+                    message_for_user = await update_user_parameter(telegram_user_id=id, text=text)
                     message_text = f'{result}'
                     message_text2 = f'{message_for_user}'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)

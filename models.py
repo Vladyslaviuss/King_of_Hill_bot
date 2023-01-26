@@ -105,7 +105,7 @@ class Statistic(Base):
 
 class Individual(Base):
     __tablename__ = "individual_statistic"
-    id = Column(BigInteger, primary_key=True)
+    telegram_user_id = Column(BigInteger, primary_key=True)
     username = Column(String)
     analysis = Column(Integer)
     signals = Column(Integer)
@@ -122,8 +122,8 @@ class Individual(Base):
         )
 
     @classmethod
-    async def create(cls, id, **kwargs):
-        new_db_string = cls(id=id, **kwargs)
+    async def create(cls, telegram_user_id, **kwargs):
+        new_db_string = cls(telegram_user_id=telegram_user_id, **kwargs)
         db.add(new_db_string)
         try:
             await db.commit()
@@ -133,10 +133,10 @@ class Individual(Base):
         return new_db_string
 
     @classmethod
-    async def update(cls, id, username, **kwargs):
+    async def update(cls, telegram_user_id, username, **kwargs):
         query = (
             sqlalchemy_update(cls)
-            .where(cls.id == id)
+            .where(cls.telegram_user_id == telegram_user_id)
             .values(username=username, **kwargs)
             .execution_options(synchronize_session="fetch")
         )
@@ -148,8 +148,8 @@ class Individual(Base):
             raise
 
     @classmethod
-    async def get(cls, id):
-        query = select(cls).where(cls.id == id)
+    async def get(cls, telegram_user_id):
+        query = select(cls).where(cls.telegram_user_id == telegram_user_id)
         new_db_strings = await db.execute(query)
         try:
             (new_db_string,) = new_db_strings.first()
@@ -166,8 +166,8 @@ class Individual(Base):
         return new_db_strings
 
     @classmethod
-    async def delete(cls, id):
-        query = sqlalchemy_delete(cls).where(cls.id == id)
+    async def delete(cls, telegram_user_id):
+        query = sqlalchemy_delete(cls).where(cls.telegram_user_id == telegram_user_id)
         await db.execute(query)
         try:
             await db.commit()

@@ -44,8 +44,8 @@ async def update(chat_id: int, existed_db_string: StringSchema | TargetSchema):
     same_db_string = await Statistic.update(chat_id, **existed_db_string.dict())
     return same_db_string
 
-async def update2(id: int, existed_db_string: IndividualSchema):
-    same_db_string = await Individual.update(id, **existed_db_string.dict())
+async def update2(telegram_user_id: int, existed_db_string: IndividualSchema):
+    same_db_string = await Individual.update(telegram_user_id, **existed_db_string.dict())
     return same_db_string
 
 
@@ -159,18 +159,18 @@ async def set_the_target_for_exact_parameter(chat_id: int, param: int, target: i
 
 
 
-async def create_new_userdata(id, new_db_string: IndividualSchema):
-    new_db_string = await Individual.create(id, **new_db_string.dict())
+async def create_new_userdata(telegram_user_id, new_db_string: IndividualSchema):
+    new_db_string = await Individual.create(telegram_user_id, **new_db_string.dict())
     return new_db_string
 
-async def existance_of_user(id: int):
+async def existance_of_user(telegram_user_id: int):
     # Try to retrieve the record with the specific ID
-    result = await Individual.get(id)
+    result = await Individual.get(telegram_user_id)
     return result
 
-async def update_user_parameter(id: int, text:str):
+async def update_user_parameter(telegram_user_id: int, text:str):
     # Retrieve the existing entry from the database
-    same_db_string = await Individual.get(id)
+    same_db_string = await Individual.get(telegram_user_id)
     if text == '+':
     # Increase the analysis field by 1
         same_db_string.analysis += 1
@@ -201,5 +201,5 @@ async def update_user_parameter(id: int, text:str):
     updated_values = same_db_string.__dict__
 
     # Call the update function to save the updated values to the database
-    await update2(id,existed_db_string=IndividualSchema(**updated_values))
+    await update2(telegram_user_id,existed_db_string=IndividualSchema(**updated_values))
     return message_text
