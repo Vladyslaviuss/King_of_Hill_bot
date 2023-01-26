@@ -1,6 +1,6 @@
 import random
 
-from sqlalchemy import Column, Integer, BigInteger, String
+from sqlalchemy import Column, Integer, BigInteger, String, ForeignKey
 from sqlalchemy import update as sqlalchemy_update
 from sqlalchemy.future import select
 from database import Base, db
@@ -105,6 +105,7 @@ class Statistic(Base):
 
 class Individual(Base):
     __tablename__ = "individual_statistic"
+    chat_id = Column(BigInteger, ForeignKey("overall_statistic.chat_id"))
     telegram_user_id = Column(BigInteger, primary_key=True)
     username = Column(String)
     analysis = Column(Integer)
