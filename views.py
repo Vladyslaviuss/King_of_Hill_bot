@@ -22,14 +22,14 @@ class IndividualSchema(BaseModel):
     help: int
 
 
-async def create_new_string(id, new_db_string: StringSchema):
-    new_db_string = await Statistic.create(id, **new_db_string.dict())
+async def create_new_string(chat_id, new_db_string: StringSchema):
+    new_db_string = await Statistic.create(chat_id, **new_db_string.dict())
     return new_db_string
 
 
 
-async def get_string(id: int):
-    new_db_string = await Statistic.get(id)
+async def get_string(chat_id: int):
+    new_db_string = await Statistic.get(chat_id)
     return new_db_string
 
 
@@ -40,8 +40,8 @@ async def get_all_strings():
 
 
 
-async def update(id: int, existed_db_string: StringSchema | TargetSchema):
-    same_db_string = await Statistic.update(id, **existed_db_string.dict())
+async def update(chat_id: int, existed_db_string: StringSchema | TargetSchema):
+    same_db_string = await Statistic.update(chat_id, **existed_db_string.dict())
     return same_db_string
 
 async def update2(id: int, existed_db_string: IndividualSchema):
@@ -50,20 +50,20 @@ async def update2(id: int, existed_db_string: IndividualSchema):
 
 
 
-async def update_target(id: int, existed_db_string: dict):
-    same_db_string = await Statistic.update(id, **existed_db_string)
+async def update_target(chat_id: int, existed_db_string: dict):
+    same_db_string = await Statistic.update(chat_id, **existed_db_string)
     return same_db_string
 
 
 
-async def delete_string(id: int):
-    return await Statistic.delete(id)
+async def delete_string(chat_id: int):
+    return await Statistic.delete(chat_id)
 
 
 
-async def update_the_value_of_object(id: int, text:str):
+async def update_the_value_of_object(chat_id: int, text:str):
     # Retrieve the existing entry from the database
-    same_db_string = await Statistic.get(id)
+    same_db_string = await Statistic.get(chat_id)
     if text == '+':
     # Increase the analysis field by 1
         same_db_string.analysis += 1
@@ -94,30 +94,19 @@ async def update_the_value_of_object(id: int, text:str):
     updated_values = same_db_string.__dict__
 
     # Call the update function to save the updated values to the database
-    await update(id,existed_db_string=StringSchema(**updated_values))
+    await update(chat_id,existed_db_string=StringSchema(**updated_values))
     return message_text
 
-# async def check_if_exists(id: str):
-#     try:
-#         query = select([Statistic]).where(Statistic.id == id)
-#         result = await db.execute(query)
-#         if result.scalars().first() is None:
-#             return False
-#         else:
-#             return True
-#     except Exception as e:
-#         print(f"Error connecting to the database: {e}")
-#         return False
 
-async def check_if_exists(id: int):
+async def check_if_exists(chat_id: int):
     # Try to retrieve the record with the specific ID
-    result = await Statistic.get(id)
+    result = await Statistic.get(chat_id)
     return result
 
 
-async def set_the_value_for_exact_parameter(id: int, param: int, value: int):
+async def set_the_value_for_exact_parameter(chat_id: int, param: int, value: int):
     # Retrieve the existing entry from the database
-    same_db_string = await Statistic.get(id)
+    same_db_string = await Statistic.get(chat_id)
     if param <= 4:
         if param == 1:
         # Increase the analysis field by 1
@@ -138,13 +127,13 @@ async def set_the_value_for_exact_parameter(id: int, param: int, value: int):
     updated_values = same_db_string.__dict__
 
     # Call the update function to save the updated values to the database
-    await update(id,existed_db_string=StringSchema(**updated_values))
+    await update(chat_id,existed_db_string=StringSchema(**updated_values))
     return message_text
 
 
-async def set_the_target_for_exact_parameter(id: int, param: int, target: int):
+async def set_the_target_for_exact_parameter(chat_id: int, param: int, target: int):
     # Retrieve the existing entry from the database
-    same_db_string = await Statistic.get(id)
+    same_db_string = await Statistic.get(chat_id)
     if param <= 4:
         if param == 1:
         # Increase the analysis field by 1
@@ -165,7 +154,7 @@ async def set_the_target_for_exact_parameter(id: int, param: int, target: int):
     updated_values = same_db_string.__dict__
 
     # Call the update function to save the updated values to the database
-    await update(id,existed_db_string=TargetSchema(**updated_values))
+    await update(chat_id,existed_db_string=TargetSchema(**updated_values))
     return message_text
 
 

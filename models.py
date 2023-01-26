@@ -9,7 +9,7 @@ from database import Base, db
 
 class Statistic(Base):
     __tablename__ = "overall_statistic"
-    id = Column(BigInteger, primary_key=True)
+    chat_id = Column(BigInteger, primary_key=True)
     analysis = Column(Integer)
     signals = Column(Integer)
     screenshot = Column(Integer)
@@ -18,14 +18,6 @@ class Statistic(Base):
     signals_target = Column(Integer, default=20)
     screenshot_target = Column(Integer, default=90)
     help_target = Column(Integer, default=20)
-
-    # def __repr__(self):
-    #     return (
-    #         f"<{self.__class__.__name__}("
-    #         f"id={self.id}, "
-    #         f"analysis={self.analysis}, "
-    #         f")>"
-    #     )
 
     def __str__(self):
         full_message = ''
@@ -56,8 +48,8 @@ class Statistic(Base):
         return full_message
 
     @classmethod
-    async def create(cls, id, **kwargs):
-        new_db_string = cls(id=id, **kwargs)
+    async def create(cls, chat_id, **kwargs):
+        new_db_string = cls(chat_id=chat_id, **kwargs)
         db.add(new_db_string)
         try:
             await db.commit()
@@ -67,10 +59,10 @@ class Statistic(Base):
         return new_db_string
 
     @classmethod
-    async def update(cls, id, **kwargs):
+    async def update(cls, chat_id, **kwargs):
         query = (
             sqlalchemy_update(cls)
-            .where(cls.id == id)
+            .where(cls.chat_id == chat_id)
             .values(**kwargs)
             .execution_options(synchronize_session="fetch")
         )
@@ -82,8 +74,8 @@ class Statistic(Base):
             raise
 
     @classmethod
-    async def get(cls, id):
-        query = select(cls).where(cls.id == id)
+    async def get(cls, chat_id):
+        query = select(cls).where(cls.chat_id == chat_id)
         new_db_strings = await db.execute(query)
         try:
             (new_db_string,) = new_db_strings.first()
@@ -100,8 +92,8 @@ class Statistic(Base):
         return new_db_strings
 
     @classmethod
-    async def delete(cls, id):
-        query = sqlalchemy_delete(cls).where(cls.id == id)
+    async def delete(cls, chat_id):
+        query = sqlalchemy_delete(cls).where(cls.chat_id == chat_id)
         await db.execute(query)
         try:
             await db.commit()
