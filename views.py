@@ -15,7 +15,7 @@ class TargetSchema(BaseModel):
     help_target: int
 
 class IndividualSchema(BaseModel):
-    username: int
+    username: str
     analysis: int
     signals: int
     screenshot: int
@@ -43,6 +43,12 @@ async def get_all_strings():
 async def update(id: int, existed_db_string: StringSchema | TargetSchema):
     same_db_string = await Statistic.update(id, **existed_db_string.dict())
     return same_db_string
+
+async def update2(id: int, existed_db_string: IndividualSchema):
+    same_db_string = await Individual.update(id, **existed_db_string.dict())
+    return same_db_string
+
+
 
 async def update_target(id: int, existed_db_string: dict):
     same_db_string = await Statistic.update(id, **existed_db_string)
@@ -179,32 +185,32 @@ async def update_user_parameter(id: int, text:str):
     if text == '+':
     # Increase the analysis field by 1
         same_db_string.analysis += 1
-        message_text = f"Параметр 'Разбор своих сделок' увеличен на 1 for {id}."
+        message_text = f"Параметр 'Разбор своих сделок' увеличен на 1 for {same_db_string.username}."
     elif text == '-':
         same_db_string.analysis -= 1
-        message_text = f"Параметр 'Разбор своих сделок' уменьшен на 1. for {id}."
+        message_text = f"Параметр 'Разбор своих сделок' уменьшен на 1. for {same_db_string.username}."
     elif text == '++':
         same_db_string.signals += 1
-        message_text = f"Параметр 'Сигналы-детекты' увеличен на 1. for {id}."
+        message_text = f"Параметр 'Сигналы-детекты' увеличен на 1. for {same_db_string.username}."
     elif text == '--':
         same_db_string.signals -= 1
-        message_text = f"Параметр 'Сигналы-детекты' уменьшен на 1. for {id}."
+        message_text = f"Параметр 'Сигналы-детекты' уменьшен на 1. for {same_db_string.username}."
     elif text == '+++':
         same_db_string.screenshot += 1
-        message_text = f"Параметр 'Скрины со сделками' увеличен на 1. for {id}."
+        message_text = f"Параметр 'Скрины со сделками' увеличен на 1. for {same_db_string.username}."
     elif text == '---':
-        message_text = f"Параметр 'Скрины со сделками' уменьшен на 1. for {id}."
+        message_text = f"Параметр 'Скрины со сделками' уменьшен на 1. for {same_db_string.username}."
         same_db_string.screenshot -= 1
     elif text == '++++':
         same_db_string.help += 1
-        message_text = f"Параметр 'Помощь новичкам, ответы на вопросы' увеличен на 1. for {id}."
+        message_text = f"Параметр 'Помощь новичкам, ответы на вопросы' увеличен на 1. for {same_db_string.username}."
     elif text == '----':
         same_db_string.help -= 1
-        message_text = f"Параметр 'Помощь новичкам, ответы на вопросы' уменьшен на 1. for {id}."
+        message_text = f"Параметр 'Помощь новичкам, ответы на вопросы' уменьшен на 1. for {same_db_string.username}."
 
     # Convert the updated object to a dictionary
     updated_values = same_db_string.__dict__
 
     # Call the update function to save the updated values to the database
-    await update(id,existed_db_string=IndividualSchema(**updated_values))
+    await update2(id,existed_db_string=IndividualSchema(**updated_values))
     return message_text

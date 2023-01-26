@@ -114,10 +114,12 @@ async def handle_text(message: Message):
                     message_text = f'Записи не найдены. Параметры для Вашего чата: "{message.chat.full_name}" сгенерированы. Повторите последнее действие для его применения.'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
                 else:
-                    if await existance_of_user(id=message.from_user.id) is None:
-                        await create_new_userdata(id=message.from_user.id, new_db_string=IndividualSchema(username=message.from_user.username, analysis=0, signals=0, screenshot=0, help=0))
+                    id = message.reply_to_message.from_user.id
+                    username = message.reply_to_message.from_user.username
+                    if await existance_of_user(id=id) is None:
+                        await create_new_userdata(id=id, new_db_string=IndividualSchema(username=username, analysis=0, signals=0, screenshot=0, help=0))
                     result = await update_the_value_of_object(id=message.chat.id, text=text)
-                    message_for_user = await update_user_parameter(id=message.from_user.id, text=text)
+                    message_for_user = await update_user_parameter(id=id, text=text)
                     message_text = f'{result}'
                     message_text2 = f'{message_for_user}'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)

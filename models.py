@@ -141,11 +141,11 @@ class Individual(Base):
         return new_db_string
 
     @classmethod
-    async def update(cls, id, **kwargs):
+    async def update(cls, id, username, **kwargs):
         query = (
             sqlalchemy_update(cls)
             .where(cls.id == id)
-            .values(**kwargs)
+            .values(username=username, **kwargs)
             .execution_options(synchronize_session="fetch")
         )
         await db.execute(query)
