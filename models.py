@@ -22,25 +22,25 @@ class Statistic(Base):
 
     def __str__(self):
         full_message = ''
-        if self.analysis <= self.analysis_target:
+        if self.analysis < self.analysis_target:
             message = f"1. ({self.analysis} / {self.analysis_target} шт) Разбор своих сделок\n"
             full_message += message
         else:
             message = f"1. ({self.analysis} / {self.analysis_target} шт) ✅ Разбор своих сделок\n"
             full_message += message
-        if self.signals <= self.signals_target:
+        if self.signals < self.signals_target:
             message = f"2. ({self.signals} / {self.signals_target} шт) Сигналы-детекты\n"
             full_message += message
         else:
             message = f"2. ({self.signals} / {self.signals_target} шт) ✅ Сигналы-детекты\n"
             full_message += message
-        if self.screenshot <= self.screenshot_target:
+        if self.screenshot < self.screenshot_target:
             message = f"3. ({self.screenshot} / {self.screenshot_target} шт) Скрины со сделками\n"
             full_message += message
         else:
             message = f"3. ({self.screenshot} / {self.screenshot_target} шт) ✅ Скрины со сделками\n"
             full_message += message
-        if self.help <= self.help_target:
+        if self.help < self.help_target:
             message = f"4. ({self.help} / {self.help_target} шт) Помощь новичкам, ответы на вопросы\n"
             full_message += message
         else:
