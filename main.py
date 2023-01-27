@@ -1,13 +1,12 @@
 import logging
-import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message, ContentType, ChatMemberStatus
 from aiogram.utils import executor
 from database import db
 from models import Statistic, Individual
-from views import StringSchema, update_the_value_of_object, \
-    create_new_string, set_the_value_for_exact_parameter, set_the_target_for_exact_parameter, \
-    create_new_userdata, IndividualSchema, update_user_parameter
+from views import StringSchema, IndividualSchema, update_overall_statistic_table, \
+    create_chat_entry, set_the_value_for_parameter, set_the_target_for_parameter, \
+    create_user_entry, update_individual_statistic_table
 
 TELEGRAM_BOT_TOKEN = '5602947939:AAFMRW-ElOh7FgQFHvmssoSCMtPhu3nm-18'
 
@@ -78,7 +77,7 @@ async def set_results(message: types.Message):
                 if len(message.text.split()) <= 3:
                     parameter = int(' '.join(message.text.split()[1:-1]))
                     value = int(message.text.split()[-1])
-                    message_text = await set_the_value_for_exact_parameter(chat_id=message.chat.id, param=parameter, value=value)
+                    message_text = await set_the_value_for_parameter(chat_id=message.chat.id, param=parameter, value=value)
                 else:
                     message_text = '🧐 Я принимаю 2 числа на вход. Первое число - порядковый номер параметра, второе - желаемое значение.'
                 await bot.send_message(chat_id=message.chat.id, text=message_text)
@@ -105,7 +104,7 @@ async def set_results(message: types.Message):
                 if len(message.text.split()) <= 3:
                     parameter = int(' '.join(message.text.split()[1:-1]))
                     target_value = int(message.text.split()[-1])
-                    message_text = await set_the_target_for_exact_parameter(chat_id=message.chat.id, param=parameter, target=target_value)
+                    message_text = await set_the_target_for_parameter(chat_id=message.chat.id, param=parameter, target=target_value)
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
                 else:
                     await bot.send_message(
@@ -159,11 +158,11 @@ async def handle_text(message: Message):
         and not message.reply_to_message.from_user.is_bot
     ):
         if await Statistic.get(chat_id=message.chat.id) is None:
-            await create_new_string(chat_id=message.chat.id, new_db_string=StringSchema(analysis=0, signals=0, screenshot=0, help=0))
+            await create_chat_entry(chat_id=message.chat.id, new_db_string=StringSchema(analysis=0, signals=0, screenshot=0, help=0))
         if await Individual.get(telegram_user_id=message.reply_to_message.from_user.id) is None:
-            await create_new_userdata(telegram_user_id=message.reply_to_message.from_user.id, chat_id=message.chat.id, new_db_string=IndividualSchema(username=message.reply_to_message.from_user.username, analysis=0, signals=0, screenshot=0, help=0, points=0))
-        result = await update_the_value_of_object(chat_id=message.chat.id, text=text)
-        message_for_user = await update_user_parameter(telegram_user_id=message.reply_to_message.from_user.id, text=text)
+            await create_user_entry(telegram_user_id=message.reply_to_message.from_user.id, chat_id=message.chat.id, new_db_string=IndividualSchema(username=message.reply_to_message.from_user.username, analysis=0, signals=0, screenshot=0, help=0, points=0))
+        result = await update_overall_statistic_table(chat_id=message.chat.id, text=text)
+        message_for_user = await update_individual_statistic_table(telegram_user_id=message.reply_to_message.from_user.id, text=text)
         message_text = f'{result}'
         message_text2 = f'{message_for_user}'
         if result is not None:
@@ -174,9 +173,7 @@ async def handle_text(message: Message):
 
 async def startup():
     await db.create_all()
-    # await dp.start_polling(bot)
 
 
 if __name__ == '__main__':
-    # asyncio.run(startup())
     executor.start_polling(dp, skip_updates=True)
