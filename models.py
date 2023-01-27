@@ -179,12 +179,9 @@ class Individual(Base):
             raise
         return True
     @classmethod
-    async def get_top_users_by_points(cls, session: AsyncSession, qtty):
-        # query = session.query(cls).order_by(cls.points.desc()).limit(qtty)
-        top_users = await session.execute(select(cls).order_by(cls.points.desc()).limit(qtty))
+    async def get_top_users_by_points(cls, qtty):
+        top_users = await db.execute(select(cls).order_by(cls.points.desc()).limit(qtty))
         return top_users.scalars().all()
-        # top_users = await query.all()
-        # return top_users
 
     @classmethod
     async def table_content(cls, chat_id: int):

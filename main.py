@@ -129,7 +129,7 @@ async def set_results(message: types.Message):
             try:
                 if len(message.text.split()) <= 2:
                     value = int(message.text.split()[-1])
-                    message_text = await show_leaders(session=db._session, qtty=value)
+                    message_text = await show_leaders(qtty=value)
                     await bot.send_message(chat_id=message.chat.id, text=message_text)
                 else:
                     message_text = f'Я принимаю 1 число на вход. Первое число - порядковый номер параметра, второе - желаемое значение. Дано больше 1го числа.'

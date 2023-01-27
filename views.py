@@ -223,6 +223,6 @@ async def check_content(chat_id: int):
     return result
 
 
-async def show_leaders(session: AsyncSession, qtty: int):
-    result = await Individual.get_top_users_by_points(session=session, qtty=qtty)
+async def show_leaders(qtty: int):
+    result = await Individual.get_top_users_by_points(qtty=qtty)
     return result
