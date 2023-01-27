@@ -68,7 +68,6 @@ class Statistic(Base):
         except TypeError as e:
             return None
 
-
     @classmethod
     async def get_all(cls):
         query = select(cls)
@@ -108,7 +107,6 @@ class Individual(Base):
             f"\nЗаработанные очки: {self.points}"
         )
 
-
     @classmethod
     async def create(cls, telegram_user_id, chat_id, **kwargs):
         new_db_string = cls(telegram_user_id=telegram_user_id, chat_id=chat_id, **kwargs)
@@ -145,7 +143,6 @@ class Individual(Base):
         except TypeError:
             return None
 
-
     @classmethod
     async def get_all(cls):
         query = select(cls)
@@ -163,6 +160,7 @@ class Individual(Base):
             await db.rollback()
             raise
         return True
+
     @classmethod
     async def get_top_users_by_points(cls, qtty):
         top_users = await db.execute(select(cls).order_by(cls.points.desc()).limit(qtty))

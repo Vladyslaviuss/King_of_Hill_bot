@@ -8,4 +8,5 @@ asyncio==3.4.3
 sqlalchemy_utils==0.39.0
 alembic==1.9.2
 pydantic==1.10.4
-aiohttp
+black==22.12.0
+flake8==6.0.0

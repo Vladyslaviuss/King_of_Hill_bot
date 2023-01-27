@@ -23,7 +23,7 @@ db.init()
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     """
-    This handler will be called when user sends `/start` or `/help` command
+    This handler will be called when chat owner sends `/start` or `/help` command
     """
     member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
     if member.status == ChatMemberStatus.OWNER:
@@ -35,7 +35,7 @@ async def send_welcome(message: types.Message):
 @dp.message_handler(commands=['results'])
 async def show_results(message: types.Message):
     """
-    This handler will be called when user sends the command '/results' as reply for message
+    This handler will be called when any chat user sends the command '/results'.
     """
     if await Statistic.get(chat_id=message.chat.id) is not None:
         results = await Statistic.get(chat_id=message.chat.id)
@@ -51,7 +51,7 @@ async def show_results(message: types.Message):
 @dp.message_handler(commands=['my_results'])
 async def show_results(message: types.Message):
     """
-    This handler will be called when user sends the command '/results' as reply for message
+    This handler will be called when any chat user sends the command '/my_results'.
     """
     if await Individual.get(telegram_user_id=message.from_user.id) is not None:
         results = await Individual.get(telegram_user_id=message.from_user.id)
@@ -67,7 +67,7 @@ async def show_results(message: types.Message):
 @dp.message_handler(commands=['set_results'])
 async def set_results(message: types.Message):
     """
-    This handler will be called when the group owner sends the command '/set_results <parameter> <value>'
+    This handler will be called when the chat owner sends the command '/set_results <parameter_number> <parameter_value>' (/set_results 3 10)
     """
     # Check if the user is the group owner
     member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
@@ -94,7 +94,7 @@ async def set_results(message: types.Message):
 @dp.message_handler(commands=['set_target'])
 async def set_results(message: types.Message):
     """
-    This handler will be called when the group owner sends the command '/set_results <parameter> <target_value>'
+    This handler will be called when the chat owner sends the command '/set_target <parameter_number> <target_value>' (/set_target 2 40)
     """
     member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
     if member.status == ChatMemberStatus.OWNER:
@@ -124,7 +124,7 @@ async def set_results(message: types.Message):
 @dp.message_handler(commands=['leaders'])
 async def set_results(message: types.Message):
     """
-    This handler will be called when the group owner sends the command '/set_results <parameter> <value>'
+    This handler will be called when the chat owner sends the command '/leaders <number>' (/leaders 10) which represents top users filtered by earned points.
     """
     # Check if the user is the group owner
     member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
@@ -150,6 +150,9 @@ async def set_results(message: types.Message):
 
 @dp.message_handler(content_types=ContentType.TEXT)
 async def handle_text(message: Message):
+    """
+    This handler will be called when the chat owner replies to any user`s message with +`s or -`s'.
+    """
     text = message.text.lower()
     member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
     if (
@@ -161,14 +164,12 @@ async def handle_text(message: Message):
             await create_chat_entry(chat_id=message.chat.id, new_db_string=StringSchema(analysis=0, signals=0, screenshot=0, help=0))
         if await Individual.get(telegram_user_id=message.reply_to_message.from_user.id) is None:
             await create_user_entry(telegram_user_id=message.reply_to_message.from_user.id, chat_id=message.chat.id, new_db_string=IndividualSchema(username=message.reply_to_message.from_user.username, analysis=0, signals=0, screenshot=0, help=0, points=0))
-        result = await update_overall_statistic_table(chat_id=message.chat.id, text=text)
+        message_for_chat = await update_overall_statistic_table(chat_id=message.chat.id, text=text)
         message_for_user = await update_individual_statistic_table(telegram_user_id=message.reply_to_message.from_user.id, text=text)
-        message_text = f'{result}'
-        message_text2 = f'{message_for_user}'
-        if result is not None:
-            await bot.send_message(chat_id=message.chat.id, text=message_text)
+        if message_for_chat is not None:
+            await bot.send_message(chat_id=message.chat.id, text=message_for_chat)
         if message_for_user is not None:
-            await bot.send_message(chat_id=message.chat.id, text=message_text2)
+            await bot.send_message(chat_id=message.chat.id, text=message_for_user)
 
 
 async def startup():
