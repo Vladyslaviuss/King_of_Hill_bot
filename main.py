@@ -56,8 +56,8 @@ async def show_results(message: types.Message):
     """
     if await existance_of_user(telegram_user_id=message.from_user.id) is not None:
         results = await get_user(telegram_user_id=message.from_user.id)
-        message_text = f'\nИндивидуальный вклад пользователя за все время: @{message.from_user.username}\n'
-        message_text += f'\n{results}\n'
+        message_text = f'Индивидуальный вклад пользователя @{message.from_user.username} за все время:\n'
+        message_text += f'{results}'
         await message.reply(f"{message_text}")
     else:
         await bot.send_message(
@@ -130,7 +130,7 @@ async def set_results(message: types.Message):
                 if len(message.text.split()) <= 2:
                     value = int(message.text.split()[-1])
                     message_text = await show_leaders(qtty=value)
-                    await bot.send_message(chat_id=message.chat.id, text=message_text)
+                    await bot.send_message(chat_id=message.chat.id, text=f'Таблица лидеров:\n  \n{message_text}')
                 else:
                     message_text = f'Я принимаю 1 число на вход. Первое число - порядковый номер параметра, второе - желаемое значение. Дано больше 1го числа.'
                     await bot.send_message(chat_id=message.chat.id, text=message_text)

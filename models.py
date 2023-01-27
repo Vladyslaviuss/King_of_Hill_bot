@@ -124,6 +124,9 @@ class Individual(Base):
             f"\nЗаработанные очки: {self.points}"
         )
 
+    # def __repr__(self):
+    #     return f"<{self.__class__.__name__}(username={self.username}, points={self.points})>"
+
     @classmethod
     async def create(cls, telegram_user_id, chat_id, **kwargs):
         new_db_string = cls(telegram_user_id=telegram_user_id, chat_id=chat_id, **kwargs)
@@ -181,7 +184,9 @@ class Individual(Base):
     @classmethod
     async def get_top_users_by_points(cls, qtty):
         top_users = await db.execute(select(cls).order_by(cls.points.desc()).limit(qtty))
-        return top_users.scalars().all()
+        top_users = top_users.scalars().all()
+        top_users_str = [f"{i}. @{user.username} - {user.points} point(s)" for i, user in enumerate(top_users, 1)]
+        return "\n".join(top_users_str)
 
     @classmethod
     async def table_content(cls, chat_id: int):
