@@ -1,10 +1,5 @@
 from pydantic import BaseModel
-from sqlalchemy import exists
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from database import db
 from models import Statistic, Individual
-
 
 class StringSchema(BaseModel):
     analysis: int

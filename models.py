@@ -1,11 +1,7 @@
-import random
-
-from sqlalchemy import Column, Integer, BigInteger, String, ForeignKey, exists
+from sqlalchemy import Column, Integer, BigInteger, String, ForeignKey
 from sqlalchemy import update as sqlalchemy_update
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from database import Base, db
-
 
 
 class Statistic(Base):
@@ -22,29 +18,17 @@ class Statistic(Base):
 
     def __str__(self):
         full_message = ''
-        if self.analysis < self.analysis_target:
-            message = f"1. ({self.analysis} / {self.analysis_target} шт) Разбор своих сделок\n"
-            full_message += message
-        else:
-            message = f"1. ({self.analysis} / {self.analysis_target} шт) ✅ Разбор своих сделок\n"
-            full_message += message
-        if self.signals < self.signals_target:
-            message = f"2. ({self.signals} / {self.signals_target} шт) Сигналы-детекты\n"
-            full_message += message
-        else:
-            message = f"2. ({self.signals} / {self.signals_target} шт) ✅ Сигналы-детекты\n"
-            full_message += message
-        if self.screenshot < self.screenshot_target:
-            message = f"3. ({self.screenshot} / {self.screenshot_target} шт) Скрины со сделками\n"
-            full_message += message
-        else:
-            message = f"3. ({self.screenshot} / {self.screenshot_target} шт) ✅ Скрины со сделками\n"
-            full_message += message
-        if self.help < self.help_target:
-            message = f"4. ({self.help} / {self.help_target} шт) Помощь новичкам, ответы на вопросы\n"
-            full_message += message
-        else:
-            message = f"4. ({self.help} / {self.help_target} шт) ✅ Помощь новичкам, ответы на вопросы\n"
+        tasks = [
+            {'name': 'Разбор своих сделок', 'current': self.analysis, 'target': self.analysis_target},
+            {'name': 'Сигналы-детекты', 'current': self.signals, 'target': self.signals_target},
+            {'name': 'Скрины со сделками', 'current': self.screenshot, 'target': self.screenshot_target},
+            {'name': 'Помощь новичкам, ответы на вопросы', 'current': self.help, 'target': self.help_target}
+        ]
+        for i, task in enumerate(tasks, 1):
+            if task['current'] < task['target']:
+                message = f"{i}. ({task['current']} / {task['target']} шт) {task['name']}\n"
+            else:
+                message = f"{i}. ({task['current']} / {task['target']} шт) ✅ {task['name']}\n"
             full_message += message
         return full_message
 
@@ -124,8 +108,6 @@ class Individual(Base):
             f"\nЗаработанные очки: {self.points}"
         )
 
-    # def __repr__(self):
-    #     return f"<{self.__class__.__name__}(username={self.username}, points={self.points})>"
 
     @classmethod
     async def create(cls, telegram_user_id, chat_id, **kwargs):
@@ -160,7 +142,7 @@ class Individual(Base):
         try:
             (new_db_string,) = new_db_strings.first()
             return new_db_string
-        except TypeError as e:
+        except TypeError:
             return None
 
 
@@ -192,9 +174,9 @@ class Individual(Base):
     async def table_content(cls, chat_id: int):
         query = select(cls).where(cls.chat_id == chat_id)
         result = await db.execute(query)
-        if result.scalar():
-            # there are rows with the specified chat_id
-            return True
-        else:
-            # there are no rows with the specified chat_id
-            return None
+        # True - means there are rows with the specified chat_id
+        # None - means there are no rows with the specified chat_id
+        return True if result.scalar() else None
+
+
+
