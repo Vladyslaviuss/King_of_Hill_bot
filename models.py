@@ -19,10 +19,10 @@ class Statistic(Base):
     def __str__(self):
         full_message = ''
         tasks = [
-            {'name': 'Разбор своих сделок', 'current': self.analysis, 'target': self.analysis_target},
-            {'name': 'Сигналы-детекты', 'current': self.signals, 'target': self.signals_target},
             {'name': 'Скрины со сделками', 'current': self.screenshot, 'target': self.screenshot_target},
-            {'name': 'Помощь новичкам, ответы на вопросы', 'current': self.help, 'target': self.help_target}
+            {'name': 'Сигналы-детекты', 'current': self.signals, 'target': self.signals_target},
+            {'name': 'Помощь новичкам, ответы на вопросы', 'current': self.help, 'target': self.help_target},
+            {'name': 'Разбор своих сделок', 'current': self.analysis, 'target': self.analysis_target}
         ]
         for i, task in enumerate(tasks, 1):
             if task['current'] < task['target']:

@@ -48,14 +48,14 @@ async def update_overall_statistic_table(chat_id: int, text:str):
 
     # Define a dictionary to map the text input to the corresponding field and operation
     field_map = {
-        '+': ('analysis', 1, "Параметр 'Разбор своих сделок'"),
-        '-': ('analysis', -1, "Параметр 'Разбор своих сделок'"),
+        '+': ('screenshot', 1, "Параметр 'Скрины со сделками'"),
+        '-': ('screenshot', -1, "Параметр 'Скрины со сделками'"),
         '++': ('signals', 1, "Параметр 'Сигналы-детекты'"),
         '--': ('signals', -1, "Параметр 'Сигналы-детекты'"),
-        '+++': ('screenshot', 1, "Параметр 'Скрины со сделками'"),
-        '---': ('screenshot', -1, "Параметр 'Скрины со сделками'"),
-        '++++': ('help', 1, "Параметр 'Помощь новичкам, ответы на вопросы'"),
-        '----': ('help', -1, "Параметр 'Помощь новичкам, ответы на вопросы'")
+        '+++': ('help', 1, "Параметр 'Помощь новичкам, ответы на вопросы'"),
+        '---': ('help', -1, "Параметр 'Помощь новичкам, ответы на вопросы'"),
+        '++++': ('analysis', 1, "Параметр 'Разбор своих сделок'"),
+        '----': ('analysis', -1, "Параметр 'Разбор своих сделок'")
     }
     # Get the field and operation from the field_map
     field, operation, message = field_map.get(text, (None, None, None))
@@ -72,14 +72,13 @@ async def update_overall_statistic_table(chat_id: int, text:str):
 
 async def update_individual_statistic_table(telegram_user_id: int, text:str):
     points_mapping = {
-        "+": (10, "analysis"),
+        "+": (1, "screenshot"),
         "++": (2, "signals"),
-        "+++": (1, "screenshot"),
-        "++++": (5, "help")
+        "+++": (5, "help"),
+        "++++": (10, "analysis"),
     }
     # Retrieve the existing entry from the database
     same_db_string = await Individual.get(telegram_user_id)
-
     if text in points_mapping:
         points, field = points_mapping[text]
         setattr(same_db_string, field, getattr(same_db_string, field) + 1)

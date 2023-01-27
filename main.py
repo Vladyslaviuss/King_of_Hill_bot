@@ -1,4 +1,6 @@
 import logging
+
+import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message, ContentType, ChatMemberStatus
 from aiogram.utils import executor
@@ -174,7 +176,9 @@ async def handle_text(message: Message):
 
 async def startup():
     await db.create_all()
+    await dp.start_polling(bot)
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(startup())
+    # executor.start_polling(dp, skip_updates=True)
