@@ -27,36 +27,27 @@ async def create_new_string(chat_id, new_db_string: StringSchema):
     return new_db_string
 
 
-
 async def get_string(chat_id: int):
-    new_db_string = await Statistic.get(chat_id)
-    return new_db_string
+    return await Statistic.get(chat_id)
 
 async def get_user(telegram_user_id: int):
-    new_db_string = await Individual.get(telegram_user_id)
-    return new_db_string
-
+    return await Individual.get(telegram_user_id)
 
 
 async def get_all_strings():
-    new_db_strings = await Statistic.get_all()
-    return new_db_strings
-
+    return await Statistic.get_all()
 
 
 async def update(chat_id: int, existed_db_string: StringSchema | TargetSchema):
-    same_db_string = await Statistic.update(chat_id, **existed_db_string.dict())
-    return same_db_string
+    return await Statistic.update(chat_id, **existed_db_string.dict())
 
 async def update2(telegram_user_id: int, existed_db_string: IndividualSchema):
-    same_db_string = await Individual.update(telegram_user_id, **existed_db_string.dict())
-    return same_db_string
+    return await Individual.update(telegram_user_id, **existed_db_string.dict())
 
 
 
 async def update_target(chat_id: int, existed_db_string: dict):
-    same_db_string = await Statistic.update(chat_id, **existed_db_string)
-    return same_db_string
+    return await Statistic.update(chat_id, **existed_db_string)
 
 
 
@@ -103,9 +94,7 @@ async def update_the_value_of_object(chat_id: int, text:str):
 
 
 async def check_if_exists(chat_id: int):
-    # Try to retrieve the record with the specific ID
-    result = await Statistic.get(chat_id)
-    return result
+    return await Statistic.get(chat_id)
 
 
 async def set_the_value_for_exact_parameter(chat_id: int, param: int, value: int):
@@ -168,9 +157,7 @@ async def create_new_userdata(telegram_user_id, chat_id, new_db_string: Individu
     return new_db_string
 
 async def existance_of_user(telegram_user_id: int):
-    # Try to retrieve the record with the specific ID
-    result = await Individual.get(telegram_user_id)
-    return result
+    return await Individual.get(telegram_user_id)
 
 async def update_user_parameter(telegram_user_id: int, text:str):
     # Retrieve the existing entry from the database
@@ -214,10 +201,8 @@ async def update_user_parameter(telegram_user_id: int, text:str):
 
 
 async def check_content(chat_id: int):
-    result = await Individual.table_content(chat_id)
-    return result
+    return await Individual.table_content(chat_id)
 
 
 async def show_leaders(qtty: int):
-    result = await Individual.get_top_users_by_points(qtty=qtty)
-    return result
+    return await Individual.get_top_users_by_points(qtty=qtty)
