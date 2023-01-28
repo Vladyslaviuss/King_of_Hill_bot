@@ -1,6 +1,6 @@
 import logging
-
 import asyncio
+import contextlib
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message, ContentType, ChatMemberStatus
 from aiogram.utils import executor
@@ -21,6 +21,8 @@ dp = Dispatcher(bot)
 
 # Create AsyncEngine & AsyncSession
 db.init()
+
+MESSAGE_DISPLAY_TIME = 5
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
@@ -43,16 +45,15 @@ async def show_results(message: types.Message):
         results = await Statistic.get(chat_id=message.chat.id)
         message_text = f'\n🔶 Общие результаты:\n'
         message_text += f'\n{results}\n'
-        to_be_deleted = await message.reply(f"{message_text}")
-        await asyncio.sleep(5)
-        try:
-            await to_be_deleted.delete()
-        except Exception as e:
-            pass
+        bot_response = await message.reply(f"{message_text}")
     else:
-        await bot.send_message(
+        bot_response = await bot.send_message(
             chat_id=message.chat.id, text=f'❌ Отсутствуют результаты для группы "{message.chat.full_name}".'
         )
+    await asyncio.sleep(MESSAGE_DISPLAY_TIME)
+    with contextlib.suppress(Exception):
+        await bot_response.delete()
+        await message.delete()
 
 
 @dp.message_handler(commands=['my_results'])
@@ -64,11 +65,17 @@ async def show_results(message: types.Message):
         results = await Individual.get(telegram_user_id=message.from_user.id)
         message_text = f'🔹 Индивидуальный вклад пользователя @{message.from_user.username} за все время:\n'
         message_text += f'{results}'
-        await message.reply(f"{message_text}")
+        bot_response = await message.reply(f"{message_text}")
     else:
-        await bot.send_message(
+        bot_response = await bot.send_message(
             chat_id=message.chat.id, text=f'❌ Отсутствуют результаты для пользователя: @{message.from_user.username}.'
         )
+    where = message.chat.type
+    if where != 'private':
+        await asyncio.sleep(MESSAGE_DISPLAY_TIME)
+        with contextlib.suppress(Exception):
+            await bot_response.delete()
+            await message.delete()
 
 
 @dp.message_handler(commands=['set_results'])
