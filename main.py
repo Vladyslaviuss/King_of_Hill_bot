@@ -43,7 +43,12 @@ async def show_results(message: types.Message):
         results = await Statistic.get(chat_id=message.chat.id)
         message_text = f'\n🔶 Общие результаты:\n'
         message_text += f'\n{results}\n'
-        await message.reply(f"{message_text}")
+        to_be_deleted = await message.reply(f"{message_text}")
+        await asyncio.sleep(5)
+        try:
+            await to_be_deleted.delete()
+        except Exception as e:
+            pass
     else:
         await bot.send_message(
             chat_id=message.chat.id, text=f'❌ Отсутствуют результаты для группы "{message.chat.full_name}".'
