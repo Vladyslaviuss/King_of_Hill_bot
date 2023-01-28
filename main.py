@@ -47,13 +47,21 @@ async def show_results(message: types.Message):
         message_text += f'\n{results}\n'
         bot_response = await message.reply(f"{message_text}")
     else:
-        bot_response = await bot.send_message(
-            chat_id=message.chat.id, text=f'❌ Отсутствуют результаты для группы "{message.chat.full_name}".'
-        )
+        where_message_sent = message.chat.type
+        if where_message_sent != 'private':
+            bot_response = await bot.send_message(
+                chat_id=message.chat.id, text=f'❌ Отсутствуют результаты для группы "{message.chat.full_name}".'
+            )
+        else:
+            bot_response = await bot.send_message(
+                chat_id=message.chat.id, text=f'❌ Используйте эту команду в общем чате!'
+            )
     await asyncio.sleep(MESSAGE_DISPLAY_TIME)
     with contextlib.suppress(Exception):
-        await bot_response.delete()
-        await message.delete()
+        # Delete the bot's response after 5 seconds
+        await bot.delete_message(chat_id=bot_response.chat.id, message_id=bot_response.message_id)
+        # Delete the command message
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @dp.message_handler(commands=['my_results'])
@@ -70,12 +78,14 @@ async def show_results(message: types.Message):
         bot_response = await bot.send_message(
             chat_id=message.chat.id, text=f'❌ Отсутствуют результаты для пользователя: @{message.from_user.username}.'
         )
-    where = message.chat.type
-    if where != 'private':
+    where_message_sent = message.chat.type
+    if where_message_sent != 'private':
         await asyncio.sleep(MESSAGE_DISPLAY_TIME)
         with contextlib.suppress(Exception):
-            await bot_response.delete()
-            await message.delete()
+        # Delete the bot's response after 5 seconds
+            await bot.delete_message(chat_id=bot_response.chat.id, message_id=bot_response.message_id)
+        # Delete the command message
+            await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 @dp.message_handler(commands=['set_results'])
