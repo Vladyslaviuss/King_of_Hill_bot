@@ -96,10 +96,10 @@ async def set_the_value_for_parameter(chat_id: int, param: int, value: int):
         return '🧐 Первая цифра должна быть не больше 4, соответствуя номеру каждого существующего параметра.'
 
     param_mapping = {
-        1: ('analysis', 'Разбор своих сделок'),
+        1: ('screenshot', 'Скрины со сделками'),
         2: ('signals', 'Сигналы-детекты'),
-        3: ('screenshot', 'Скрины со сделками'),
-        4: ('help', 'Помощь новичкам, ответы на вопросы')
+        3: ('help', 'Помощь новичкам, ответы на вопросы'),
+        4: ('analysis', 'Разбор своих сделок')
     }
     param_name, output_name = param_mapping.get(param)
     if param_name:
@@ -116,25 +116,39 @@ async def set_the_value_for_parameter(chat_id: int, param: int, value: int):
 async def set_the_target_for_parameter(chat_id: int, param: int, target: int):
     # Retrieve the existing entry from the database
     same_db_string = await Statistic.get(chat_id)
-    if param <= 4:
-        if param == 1:
-        # Increase the analysis field by 1
-            same_db_string.analysis_target = target
-            message_text = f"Новая цель для параметра 'Разбор своих сделок' установлена: {target}."
-        elif param == 2:
-            same_db_string.signals_target = target
-            message_text = f"Новая цель для параметра 'Сигналы-детекты' установлена: {target}."
-        elif param == 3:
-            same_db_string.screenshot_target = target
-            message_text = f"Новая цель для параметра 'Скрины со сделками' установлена: {target}."
-        elif param == 4:
-            same_db_string.help_target = target
-            message_text = f"Новая цель для параметра 'Помощь новичкам, ответы на вопросы' установлена: {target}."
+    if param > 4:
+        return '🧐 Первая цифра должна быть не больше 4, соответствуя номеру каждого существующего параметра.'
+
+    param_mapping = {
+        1: ('screenshot_target', 'Скрины со сделками'),
+        2: ('signals_target', 'Сигналы-детекты'),
+        3: ('help_target', 'Помощь новичкам, ответы на вопросы'),
+        4: ('analysis_target', 'Разбор своих сделок')
+    }
+    param_name, output_name = param_mapping.get(param)
+    if param_name:
+        setattr(same_db_string, param_name, target)
+        message_text = f"Новая цель для параметра '{output_name}' установлена: {target}."
     else:
-        message_text = f'🧐 Первая цифра должна быть не больше 4, соответствуя номеру каждого существующего параметра.'
+        message_text = f'Параметр с номером {param} не найден.'
+    # if param <= 4:
+    #     if param == 1:
+    #     # Increase the analysis field by 1
+    #         same_db_string.analysis_target = target
+    #         message_text = f"Новая цель для параметра 'Разбор своих сделок' установлена: {target}."
+    #     elif param == 2:
+    #         same_db_string.signals_target = target
+    #         message_text = f"Новая цель для параметра 'Сигналы-детекты' установлена: {target}."
+    #     elif param == 3:
+    #         same_db_string.screenshot_target = target
+    #         message_text = f"Новая цель для параметра 'Скрины со сделками' установлена: {target}."
+    #     elif param == 4:
+    #         same_db_string.help_target = target
+    #         message_text = f"Новая цель для параметра 'Помощь новичкам, ответы на вопросы' установлена: {target}."
+    # else:
+    #     message_text = f'🧐 Первая цифра должна быть не больше 4, соответствуя номеру каждого существующего параметра.'
     # Convert the updated object to a dictionary
     updated_values = same_db_string.__dict__
-
     # Call the update function to save the updated values to the database
     await update_chat_parameter_or_target(chat_id, existed_db_string=TargetSchema(**updated_values))
     return message_text

@@ -24,6 +24,7 @@ db.init()
 
 MESSAGE_DISPLAY_TIME = 5
 BOT_OWNER = 284134017
+GROUP_ID = -1001830895816
 
 @dp.message_handler(commands=['help'])
 async def send_welcome(message: types.Message):
@@ -32,9 +33,16 @@ async def send_welcome(message: types.Message):
     """
     where_message_sent = message.chat.type
     if message.from_user.id == BOT_OWNER and where_message_sent == 'private':
-        await message.reply("Here`s a full list of commands and tips:\nI'm Bot!\n This is test message.")
+        await message.reply("Here`s a full list of commands and tips:\n/help - список всех команд, доступных для владельца бота. Работает только в личных сообщениях."
+                            "\n/results - Показать общие результаты чата. Работает в чате, может быть вызвана любым пользователем. Вывод удаляется через 15 секунд. "
+                            "\n/my_results - Показать вклад одного пользователя. Работает в чате (вывод удаляется через 15 секунд) и в личных сообщениях (вывод не удаляется)."
+                            "\n/set_results <parameter_number> <parameter_value> - "
+                            "\n/set_target <parameter_number> <target_value> - "
+                            "\n/leaders <number> - Показать список лидеров по очкам. Длина списка задается числом <number>. "
+                            "\n/increase_points_by <value> - Работает только в чате в ответ на сообщение пользователя, которому нужно увеличить очки. "
+                            "\n/decrease_points_by <value> - Работает только в чате в ответ на сообщение пользователя, которому нужно уменьшить очки.")
 
-
+                        # По царскому велению очки для пользователя -- увеличены на --
 
 @dp.message_handler(commands=['results'])
 async def show_results(message: types.Message):
