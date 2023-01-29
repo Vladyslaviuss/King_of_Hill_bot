@@ -23,17 +23,17 @@ dp = Dispatcher(bot)
 db.init()
 
 MESSAGE_DISPLAY_TIME = 5
+BOT_OWNER = 284134017
 
-@dp.message_handler(commands=['start', 'help'])
+@dp.message_handler(commands=['help'])
 async def send_welcome(message: types.Message):
     """
-    This handler will be called when chat owner sends `/start` or `/help` command
+    This handler will be called when chat owner sends `/help` command
     """
-    member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
-    if member.status == ChatMemberStatus.OWNER:
-        await message.reply("Hi!\nI'm Bot!\n This is test message.")
-    else:
-        await message.reply("⛔ Отказано в доступе!")
+    where_message_sent = message.chat.type
+    if message.from_user.id == BOT_OWNER and where_message_sent == 'private':
+        await message.reply("Here`s a full list of commands and tips:\nI'm Bot!\n This is test message.")
+
 
 
 @dp.message_handler(commands=['results'])
@@ -54,7 +54,8 @@ async def show_results(message: types.Message):
             )
         else:
             bot_response = await bot.send_message(
-                chat_id=message.chat.id, text=f'❌ Используйте эту команду в общем чате!'
+                chat_id=message.chat.id,
+                text='❌ Используйте эту команду в общем чате!',
             )
     await asyncio.sleep(MESSAGE_DISPLAY_TIME)
     with contextlib.suppress(Exception):
