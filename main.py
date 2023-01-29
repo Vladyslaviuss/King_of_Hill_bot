@@ -24,7 +24,7 @@ db.init()
 
 MESSAGE_DISPLAY_TIME = 5
 BOT_OWNER = 284134017
-GROUP_ID = -1001830895816
+CHAT_ID = -1001830895816
 
 @dp.message_handler(commands=['help'])
 async def send_welcome(message: types.Message):
@@ -100,59 +100,52 @@ async def show_results(message: types.Message):
 @dp.message_handler(commands=['set_results'])
 async def set_results(message: types.Message):
     """
-    This handler will be called when the chat owner sends the command '/set_results <parameter_number> <parameter_value>' (/set_results 3 10)
+    This handler will be called when the bot owner sends the command '/set_results <parameter_number> <parameter_value>' (/set_results 3 10)
     """
-    # Check if the user is the group owner
-    member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
-    if member.status == ChatMemberStatus.OWNER:
-        if await Statistic.get(chat_id=message.chat.id) is not None:
+    # Check if the user is the bow owner and call a command in private chat
+    where_message_sent = message.chat.type
+    if message.from_user.id == BOT_OWNER and where_message_sent == 'private':
+        if await Statistic.get(chat_id=CHAT_ID) is not None:
             try:
                 if len(message.text.split()) <= 3:
                     parameter = int(' '.join(message.text.split()[1:-1]))
                     value = int(message.text.split()[-1])
-                    message_text = await set_the_value_for_parameter(chat_id=message.chat.id, param=parameter, value=value)
+                    message_text = await set_the_value_for_parameter(chat_id=CHAT_ID, param=parameter, value=value)
                 else:
                     message_text = '🧐 Я принимаю 2 числа на вход. Первое число - порядковый номер параметра, второе - желаемое значение.'
-                await bot.send_message(chat_id=message.chat.id, text=message_text)
+                # await bot.send_message(chat_id=CHAT_ID, text=message_text)
+                await message.answer(text=message_text)
             except ValueError:
-                await bot.send_message(chat_id=message.chat.id, text='🛑 Неверный формат сообщения для команды.\n Пример: "/set_results 1 5" увеличит параметр "А" до 5')
+                await message.answer(text='🛑 Неверный формат сообщения для команды.\n Пример: "/set_results 1 5" увеличит параметр "А" до 5')
         else:
-            message_text = '📝 Записи в таблице не найдены.'
-            await bot.send_message(chat_id=message.chat.id, text=message_text)
-    else:
-        message_text = "⛔ Отказано в доступе!"
-        await bot.send_message(chat_id=message.chat.id, text=message_text)
+            await message.answer(text='📝 Записи в таблице не найдены.')
+
 
 
 @dp.message_handler(commands=['set_target'])
 async def set_results(message: types.Message):
     """
-    This handler will be called when the chat owner sends the command '/set_target <parameter_number> <target_value>' (/set_target 2 40)
+    This handler will be called when the bot owner sends the command '/set_target <parameter_number> <target_value>' (/set_target 2 40)
     """
-    member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
-    if member.status == ChatMemberStatus.OWNER:
-        if await Statistic.get(chat_id=message.chat.id) is not None:
+    # member = await bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+    # if member.status == ChatMemberStatus.OWNER:
+    where_message_sent = message.chat.type
+    if message.from_user.id == BOT_OWNER and where_message_sent == 'private':
+        if await Statistic.get(chat_id=CHAT_ID) is not None:
             try:
                 # Get the parameter and value from the command
                 if len(message.text.split()) <= 3:
                     parameter = int(' '.join(message.text.split()[1:-1]))
                     target_value = int(message.text.split()[-1])
-                    message_text = await set_the_target_for_parameter(chat_id=message.chat.id, param=parameter, target=target_value)
-                    await bot.send_message(chat_id=message.chat.id, text=message_text)
+                    message_text = await set_the_target_for_parameter(chat_id=CHAT_ID, param=parameter, target=target_value)
+                    await message.answer(text=message_text)
                 else:
-                    await bot.send_message(
-                        chat_id=message.chat.id,
-                        text='🧐 Я принимаю 2 числа на вход. Первое число - порядковый номер параметра, второе - желаемое значение.',
+                    await message.answer(text='🧐 Я принимаю 2 числа на вход. Первое число - порядковый номер параметра, второе - желаемое значение.',
                     )
             except ValueError:
-                await bot.send_message(chat_id=message.chat.id, text='🛑 Неверный формат сообщения для команды.\n Пример: "/set_target 1 5" увеличит цель для параметра "А" до 5')
+                await message.answer(text='🛑 Неверный формат сообщения для команды.\n Пример: "/set_target 1 5" увеличит цель для параметра "А" до 5')
         else:
-            message_text = '📝 Записи в таблице не найдены.'
-            await bot.send_message(chat_id=message.chat.id, text=message_text)
-    else:
-        message_text = "⛔ Отказано в доступе!"
-        await bot.send_message(chat_id=message.chat.id, text=message_text)
-
+            await message.answer(text='📝 Записи в таблице не найдены.')
 
 @dp.message_handler(commands=['leaders'])
 async def set_results(message: types.Message):
