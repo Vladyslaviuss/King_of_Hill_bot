@@ -83,7 +83,7 @@ async def update_individual_statistic_table(telegram_user_id: int, text:str):
         points, field = points_mapping[text]
         setattr(same_db_string, field, getattr(same_db_string, field) + 1)
         same_db_string.points += points
-        message_text = f"Пользователь @{same_db_string.username} получает {points} очков."
+        message_text = f"Пользователь @{same_db_string.username} получает {points} point(s)."
         # Convert the updated object to a dictionary
         updated_values = same_db_string.__dict__
         # Call the update function to save the updated values to the database
@@ -135,4 +135,15 @@ async def set_the_target_for_parameter(chat_id: int, param: int, target: int):
     updated_values = same_db_string.__dict__
     # Call the update function to save the updated values to the database
     await update_chat_parameter_or_target(chat_id, existed_db_string=TargetSchema(**updated_values))
+    return message_text
+
+
+async def increase_and_save(telegram_user_id: int, value:int):
+    same_db_string = await Individual.get(telegram_user_id)
+    same_db_string.points += value
+    message_text = f"По царскому велению пользователь @{same_db_string.username} получает {value} point(s)."
+    # Convert the updated object to a dictionary
+    updated_values = same_db_string.__dict__
+    # Call the update function to save the updated values to the database
+    await update_user_parameter(telegram_user_id, existed_db_string=IndividualSchema(**updated_values))
     return message_text
