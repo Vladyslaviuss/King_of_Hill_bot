@@ -8,7 +8,7 @@ from database import db
 from models import Statistic, Individual
 from views import StringSchema, IndividualSchema, update_overall_statistic_table, \
     create_chat_entry, set_the_value_for_parameter, set_the_target_for_parameter, \
-    create_user_entry, update_individual_statistic_table, increase_and_save
+    create_user_entry, update_individual_statistic_table, increase_and_save, decrease_and_save
 
 TELEGRAM_BOT_TOKEN = '5602947939:AAFMRW-ElOh7FgQFHvmssoSCMtPhu3nm-18'
 
@@ -160,12 +160,16 @@ async def show_leaders(message: types.Message):
                 value = int(message.text.split()[-1])
                 message_text = await Individual.get_top_users_by_points(qtty=value)
                 await message.answer(text=f'Таблица лидеров:\n  \n{message_text}')
+                await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             else:
-                await message.answer(text='🧐 Я принимаю только одно число на вход - количество человек в таблице. Пример: "/leaders 10" - выведет таблицу с 10 людьми.')
+                # await message.answer(text='🧐 Я принимаю только одно число на вход - количество человек в таблице. Пример: "/leaders 10" - выведет таблицу с 10 людьми.')
+                await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
         except ValueError:
-            await message.answer(text='🛑 Неверный формат сообщения для команды.\n Пример: "/leaders 10" - выведет таблицу с 10 людьми.')
+            # await message.answer(text='🛑 Неверный формат сообщения для команды.\n Пример: "/leaders 10" - выведет таблицу с 10 людьми.')
+            await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     else:
-        await message.answer(text='📝 Записи в таблице не найдены.')
+        # await message.answer(text='📝 Записи в таблице не найдены.')
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 @dp.message_handler(commands=['increase_points_by'])
 async def increase_points_by(message: types.Message):
@@ -181,6 +185,29 @@ async def increase_points_by(message: types.Message):
                     await create_user_entry(telegram_user_id=message.reply_to_message.from_user.id, chat_id=message.chat.id, new_db_string=IndividualSchema(username=message.reply_to_message.from_user.username, analysis=0, signals=0, screenshot=0, help=0, points=0))
                 value = int(message.text.split()[-1])
                 message_text = await increase_and_save(telegram_user_id=user_to_be_awarded, value=value)
+                await message.answer(text=f'{message_text}')
+                await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            else:
+                await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            #     await message.answer(text='🧐 Я принимаю только одно число на вход - количество очков для увеличения.')
+        except ValueError:
+            # await message.answer(text='🛑 Неверный формат сообщения для команды.')
+            await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
+@dp.message_handler(commands=['decrease_points_by'])
+async def increase_points_by(message: types.Message):
+    """
+    This handler will be called when the bot owner sends the command '/increase_points_by <number>' (/increase_points_by 10) on reply to the user`s message.
+    """
+    where_message_sent = message.chat.type
+    if message.from_user.id == BOT_OWNER and message.reply_to_message and where_message_sent != 'private':
+        try:
+            if len(message.text.split()) <= 2:
+                user_to_be_awarded = message.reply_to_message.from_user.id
+                if await Individual.get(telegram_user_id=user_to_be_awarded) is None:
+                    await create_user_entry(telegram_user_id=message.reply_to_message.from_user.id, chat_id=message.chat.id, new_db_string=IndividualSchema(username=message.reply_to_message.from_user.username, analysis=0, signals=0, screenshot=0, help=0, points=0))
+                value = int(message.text.split()[-1])
+                message_text = await decrease_and_save(telegram_user_id=user_to_be_awarded, value=value)
                 await message.answer(text=f'{message_text}')
                 await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             else:
@@ -210,12 +237,14 @@ async def handle_text(message: Message):
         message_for_chat = await update_overall_statistic_table(chat_id=message.chat.id, text=text)
         message_for_user = await update_individual_statistic_table(telegram_user_id=message.reply_to_message.from_user.id, text=text)
         first_bot_response = await bot.send_message(chat_id=message.chat.id, text=message_for_chat)
-        second_bot_response = await bot.send_message(chat_id=message.chat.id, text=message_for_user)
+        if message_for_user is not None:
+            second_bot_response = await bot.send_message(chat_id=message.chat.id, text=message_for_user)
         await asyncio.sleep(MESSAGE_DISPLAY_TIME)
         with contextlib.suppress(Exception):
         # Delete the bot's response after 5 seconds
             await bot.delete_message(chat_id=first_bot_response.chat.id, message_id=first_bot_response.message_id)
-            await bot.delete_message(chat_id=second_bot_response.chat.id, message_id=second_bot_response.message_id)
+            if message_for_user is not None:
+                await bot.delete_message(chat_id=second_bot_response.chat.id, message_id=second_bot_response.message_id)
 
 
 

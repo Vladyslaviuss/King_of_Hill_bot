@@ -147,3 +147,13 @@ async def increase_and_save(telegram_user_id: int, value:int):
     # Call the update function to save the updated values to the database
     await update_user_parameter(telegram_user_id, existed_db_string=IndividualSchema(**updated_values))
     return message_text
+
+async def decrease_and_save(telegram_user_id: int, value:int):
+    same_db_string = await Individual.get(telegram_user_id)
+    same_db_string.points -= value
+    message_text = f"По царскому велению пользователь @{same_db_string.username} теряет {value} point(s)."
+    # Convert the updated object to a dictionary
+    updated_values = same_db_string.__dict__
+    # Call the update function to save the updated values to the database
+    await update_user_parameter(telegram_user_id, existed_db_string=IndividualSchema(**updated_values))
+    return message_text
