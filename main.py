@@ -1,6 +1,8 @@
 import logging
 import asyncio
 import contextlib
+import os
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message, ContentType, ChatMemberStatus
 from aiogram.utils import executor
@@ -19,11 +21,13 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 dp = Dispatcher(bot)
 
+load_dotenv()
+
 # Create AsyncEngine & AsyncSession
 db.init()
 
 MESSAGE_DISPLAY_TIME = 5
-BOT_OWNER = 284134017
+BOT_OWNER = int(os.getenv("BOT_OWNER"))
 CHAT_ID = -1001830895816
 
 @dp.message_handler(commands=['help'])
